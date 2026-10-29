@@ -81,3 +81,40 @@ python -u scripts/train_conditioned_ridge.py \
 두 alpha 후보의 전체 실행과 저장을 확인했습니다. 실제 3,453-probe 데이터의 성능은 미검증입니다.
 절대 발현 RMSE만으로 독성 관련 변화량 보존이나 독성 예측 개선을 주장하지 않습니다.
 현재 약리·표적·RDKit descriptor·diffusion은 이 학습 코드에 포함하지 않습니다.
+
+## 조건부 잠재공간 diffusion
+
+```bash
+python -m pip install -r requirements-diffusion.txt
+OPENBLAS_NUM_THREADS=4 OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 \
+python -u scripts/train_conditioned_diffusion.py \
+  --prepared /home/seowon1211/data1/conditioned_expression/prepared \
+  --structure /home/seowon1211/data1/struct_feats/struct_morgan2048.csv \
+  --out /home/seowon1211/data1/conditioned_expression/diffusion_seed42
+```
+
+- 입력은 조건부 Ridge와 같으며, 기본 외부 seed 42의 화합물 5-fold도 같습니다.
+- 외부 학습 화합물 안에서 20%의 화합물을 내부 검증에 사용합니다.
+  이 스크립트는 Ridge 스크립트의 내부 3-fold와 다른 단일 검증 방식이므로
+  이번 실행은 탐색 비교이며 동일 튜닝 예산의 확정 비교가 아닙니다.
+- 목표 조건 Ridge의 alpha를 내부에서 선택하고, 그 모델의 학습 잔차를
+  고유 목표 조건 기준 PCA(기본 32차원)로 압축합니다.
+- 전체 조건 입력으로 잠재 잔차를 생성하는 x0-prediction DDPM을 학습합니다.
+  기본값은 30 timestep, 150 epoch, 25 epoch마다 검증, 8개 샘플의 평균입니다.
+- 내부 검증으로 epoch와 잔차 보정 강도(0, 0.1, 0.25, 0.5, 1)를 선택합니다.
+  강도 0은 목표 조건 기준선과 동일하며, 성능 개선으로 간주하지 않습니다.
+- 같은 잠재공간의 Ridge도 alpha와 보정 강도를 내부에서 선택합니다.
+- 선택 후 외부 학습 전체에서 전처리·PCA·모델을 다시 적합합니다.
+  전체 입력 모델의 학습 손실은 목표당 조합 수를 보정합니다.
+- 목표 조건별 평균 예측을 원래 probe 공간에서 평가합니다.
+- `pca_reconstruction_diagnostic`은 실제 테스트 정답의 잔차를 압축·복원한
+  진단값입니다. 정답을 사용하므로 예측 모델이나 누출 없는 성능으로 보고하면 안 됩니다.
+
+`fold_metrics.csv`, `selected_settings.csv`, `compound_folds.csv`, `config.json`과
+모델별 목표 ID·probe 예측 NPZ를 저장합니다. 생성 샘플의 구간은 평가하지 않습니다.
+검증점 선택에는 동일한 샘플링 seed를 사용하며, 학습 난수와 분리합니다.
+
+합성 데이터에서 외부 2-fold, 내부 화합물 검증, diffusion 학습·역생성,
+설정 선택 후 재학습과 파일 저장까지 실행했습니다. 실제 데이터의 성능은 미검증입니다.
+CPU가 기본이며 GPU는 배정된 장치가 있는 경우에만 `--device cuda`로 선택합니다.
+이 구현은 모달리티별 게이트가 아닌 조건 특징 연결 방식입니다.
