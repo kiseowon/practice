@@ -13,7 +13,7 @@ from sklearn.linear_model import Ridge
 from sklearn.model_selection import GroupShuffleSplit
 from sklearn.preprocessing import StandardScaler
 
-from train_conditioned_ridge import split_features, target_average
+from train_conditioned_ridge import split_features, target_average, structure_values
 
 
 def seed_all(seed):
@@ -139,9 +139,8 @@ def run(args):
         raise ValueError('구조 화합물 중복')
     excluded = {'compound','pubchem_cid','cid','smiles','status','name'}
     bits = [c for c in st if c.lower() not in excluded and not c.lower().startswith('unnamed:') and pd.api.types.is_numeric_dtype(st[c])]
-    if not bits or not np.isin(st[bits].to_numpy(float), [0,1]).all():
-        raise ValueError('Morgan bit 오류')
-    st = st.set_index('compound')[bits]
+    values = structure_values(st,bits,args.structure_kind)
+    st = pd.DataFrame(values,index=st.compound.to_numpy(),columns=bits)
     st['structure_present'] = 1.
     structure = st.reindex(sorted(pairs.compound.unique())).fillna(0)
     groups = pairs.compound.to_numpy()
@@ -224,6 +223,7 @@ if __name__ == '__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--prepared',type=Path,required=True)
     p.add_argument('--structure',type=Path,required=True)
+    p.add_argument('--structure-kind',choices=['binary','count'],default='binary')
     p.add_argument('--out',type=Path,required=True)
     p.add_argument('--seed',type=int,default=42)
     p.add_argument('--model-seed',type=int,default=None)

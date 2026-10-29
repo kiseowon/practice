@@ -197,3 +197,46 @@ weight decay 0.01을 사용합니다. cGAN 판별기는 은닉층 64·32 노드�
 
 두 모델을 합성 데이터에서 외부 2-fold로 실행하고, 기존 변화량 평가기와 연결해 결과 저장을 검증했습니다.
 실제 연구실 데이터 성능은 미검증입니다. 출력 폴더가 비어 있지 않으면 중단하며 fold 중간 재개는 지원하지 않습니다.
+
+## Binary Morgan과 Count Morgan 비교
+
+```bash
+python -m pip install -r requirements-structure.txt
+python scripts/structure_features.py \
+  --smiles /home/seowon1211/data1/compound_pubchem_smiles.csv \
+  --out /home/seowon1211/data1/conditioned_expression/morgan_matched \
+  --radius 2 --size 2048
+
+python -u scripts/run_structure_comparison.py \
+  --prepared /home/seowon1211/data1/conditioned_expression/prepared_controls \
+  --features /home/seowon1211/data1/conditioned_expression/morgan_matched \
+  --out /home/seowon1211/data1/conditioned_expression/structure_count_comparison \
+  --models mlp --epochs 100
+```
+
+처음에는 MLP의 binary/count 2회, 총 10개 외부 fold만 실행합니다.
+이후 같은 명령에 `--models mlp diffusion`을 지정하면 완료 표시와 설정이 같은 MLP는 재사용하고
+같은 100 epoch 예산의 diffusion binary/count를 추가 실행합니다.
+전체 4회가 끝나면 20개 외부 fold입니다. 실행 도중 중단된 개별 실행의 fold 재개는 지원하지 않습니다.
+
+기존 구조 생성 설정을 추정하지 않고, 같은 generator의 folded count fingerprint에서
+binary를 `(count > 0)`으로 파생합니다. 반경 2, 길이 2048, count simulation 없음,
+입체화학 사용 안 함이 기본이며 `--chirality`로 두 표현에 함께 적용할 수 있습니다.
+이번 설정은 고정 탐색 설정이며 최적화했다는 뜻이 아닙니다.
+기존 구조 파일은 상수 컬럼 제거 등 차이가 있을 수 있어 이전 결과와 직접 비교하지 않습니다.
+
+Count 입력은 `--structure-kind count`에서 `log2(1+count)`로 압축합니다.
+출현 1회는 binary 값 1과 같으며 2회 이상일 때만 더 큰 값을 제공합니다.
+전체 자료를 이용한 특징 선택이나 PCA를 구조 생성 단계에서 수행하지 않습니다.
+반경·길이·입체화학·RDKit 버전은 config.json에 기록하고, 구조 해독 실패와 canonical SMILES를
+structure_audit.csv에 기록합니다. 구조 결측 화합물도 학습에서 유지합니다.
+이름을 임의로 바꾸거나 염 제거·양성자화 표준화를 적용하지 않습니다.
+해시 충돌 때문에 count는 개별 작용기의 정확한 개수와 항상 같지는 않습니다.
+
+학습 데이터, 입력 발현 표현, 목표 조건, 출력 PCA, 외부 분할 seed, 학습 seed,
+후보 보정 강도와 내부 검증 방식은 두 구조 표현에서 동일하게 유지합니다.
+기본 MLP와 diffusion 모두 최대 100 epoch, 8개 생성 샘플(diffusion), 내부 절대 발현 MSE 설정 선택입니다.
+최종 평가는 대조군 대비 변화량으로 수행하며 `count_vs_binary.csv`의 비율이 1 미만이면
+count가 좋은 결과입니다. 분할 seed 42와 학습 seed 42 한 쌍의 탐색 실험입니다.
+합성 분자에서 두 특징 생성과 MLP·diffusion 학습 및 반응 평가 연결을 검증했습니다.
+실제 연구실 데이터 성능은 미검증입니다.

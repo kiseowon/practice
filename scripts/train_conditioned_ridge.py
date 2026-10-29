@@ -12,6 +12,22 @@ from sklearn.model_selection import GroupKFold
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 
+def structure_values(frame, columns, kind):
+    if not columns:
+        raise ValueError('구조 특징이 없습니다.')
+    values=frame[columns].to_numpy(dtype=float,copy=True)
+    if not np.isfinite(values).all() or (values<0).any():
+        raise ValueError('구조 특징의 결측·음수·무한값')
+    if kind=='binary':
+        if not np.isin(values,[0,1]).all():
+            raise ValueError('binary 구조는 0/1이어야 합니다.')
+        return values
+    if not np.equal(values,np.floor(values)).all():
+        raise ValueError('count 구조는 정수 횟수여야 합니다.')
+    # 출현 1회는 binary의 1과 같고, 큰 횟수만 완만하게 압축합니다.
+    return np.log2(1 + values)
+
+
 def conditions(frame, suffix):
     return pd.DataFrame({
         'log_dose': np.log1p(frame[f'dose{suffix}'].to_numpy(float)),
@@ -90,9 +106,8 @@ def run(args):
         raise ValueError('구조 화합물 중복')
     exclude = {'compound','pubchem_cid','cid','smiles','status','name'}
     bits = [c for c in structure if c.lower() not in exclude and not c.lower().startswith('unnamed:') and pd.api.types.is_numeric_dtype(structure[c])]
-    if not bits or not np.isin(structure[bits].to_numpy(float), [0, 1]).all():
-        raise ValueError('유효한 Morgan bit 없음')
-    structure = structure.set_index('compound')[bits]
+    values = structure_values(structure,bits,args.structure_kind)
+    structure = pd.DataFrame(values,index=structure.compound.to_numpy(),columns=bits)
     structure['structure_present'] = 1.
     structure = structure.reindex(sorted(pairs.compound.unique())).fillna(0)
     print('구조 결측 화합물:', structure.index[structure.structure_present.eq(0)].tolist(), flush=True)
@@ -150,6 +165,7 @@ if __name__ == '__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--prepared',type=Path,required=True)
     p.add_argument('--structure',type=Path,required=True)
+    p.add_argument('--structure-kind',choices=['binary','count'],default='binary')
     p.add_argument('--out',type=Path,required=True)
     p.add_argument('--seed',type=int,default=42)
     p.add_argument('--folds',type=int,default=5)
