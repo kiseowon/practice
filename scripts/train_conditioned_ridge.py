@@ -100,17 +100,22 @@ def run(args):
             raise ValueError('대응표 조건 ID 범위 오류')
         if not np.array_equal(table.iloc[ids].compound.to_numpy(), pairs.compound.to_numpy()):
             raise ValueError('대응표 화합물 불일치')
-    structure = pd.read_csv(args.structure)
-    structure.compound = structure.compound.astype(str).str.strip()
-    if structure.compound.duplicated().any():
-        raise ValueError('구조 화합물 중복')
-    exclude = {'compound','pubchem_cid','cid','smiles','status','name'}
-    bits = [c for c in structure if c.lower() not in exclude and not c.lower().startswith('unnamed:') and pd.api.types.is_numeric_dtype(structure[c])]
-    values = structure_values(structure,bits,args.structure_kind)
-    structure = pd.DataFrame(values,index=structure.compound.to_numpy(),columns=bits)
-    structure['structure_present'] = 1.
-    structure = structure.reindex(sorted(pairs.compound.unique())).fillna(0)
-    print('구조 결측 화합물:', structure.index[structure.structure_present.eq(0)].tolist(), flush=True)
+    if args.no_structure:
+        # 구조 bit와 구조 결측 표시를 모두 제외합니다.
+        structure = pd.DataFrame(index=sorted(pairs.compound.unique()))
+        print('구조정보 제외: 구조 특징 수=0',flush=True)
+    else:
+        structure = pd.read_csv(args.structure)
+        structure.compound = structure.compound.astype(str).str.strip()
+        if structure.compound.duplicated().any():
+            raise ValueError('구조 화합물 중복')
+        exclude = {'compound','pubchem_cid','cid','smiles','status','name'}
+        bits = [c for c in structure if c.lower() not in exclude and not c.lower().startswith('unnamed:') and pd.api.types.is_numeric_dtype(structure[c])]
+        values = structure_values(structure,bits,args.structure_kind)
+        structure = pd.DataFrame(values,index=structure.compound.to_numpy(),columns=bits)
+        structure['structure_present'] = 1.
+        structure = structure.reindex(sorted(pairs.compound.unique())).fillna(0)
+        print('구조 결측 화합물:', structure.index[structure.structure_present.eq(0)].tolist(), flush=True)
     groups = pairs.compound.to_numpy()
     names = np.random.default_rng(args.seed).permutation(sorted(set(groups)))
     mapping = {c: i % args.folds for i, c in enumerate(names)}
@@ -166,6 +171,7 @@ if __name__ == '__main__':
     p.add_argument('--prepared',type=Path,required=True)
     p.add_argument('--structure',type=Path,required=True)
     p.add_argument('--structure-kind',choices=['binary','count'],default='binary')
+    p.add_argument('--no-structure',action='store_true')
     p.add_argument('--out',type=Path,required=True)
     p.add_argument('--seed',type=int,default=42)
     p.add_argument('--folds',type=int,default=5)

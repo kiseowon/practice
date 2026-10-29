@@ -240,3 +240,18 @@ structure_audit.csv에 기록합니다. 구조 결측 화합물도 학습에서 
 count가 좋은 결과입니다. 분할 seed 42와 학습 seed 42 한 쌍의 탐색 실험입니다.
 합성 분자에서 두 특징 생성과 MLP·diffusion 학습 및 반응 평가 연결을 검증했습니다.
 실제 연구실 데이터 성능은 미검증입니다.
+
+## 구조정보 제외 실험
+
+세 학습 스크립트에서 `--no-structure`를 지정하면 Morgan과 구조 결측 표시를 모두 제거하고,
+발현·입력 조건·목표 조건은 그대로 유지합니다. 구조 CSV를 읽지 않으며 CLI 호환성을 위해
+`--structure` 인자는 계속 전달합니다. 모든 화합물을 유지하고 분할·PCA·목표 기준선·설정 선택 방식을
+구조 포함 실험과 동일하게 사용합니다. 신경망 입력 차원이 줄어 파라미터 수도 바뀌므로
+관찰한 차이를 구조의 생물학적 정보 효과만으로 단정하지 않습니다.
+
+예: `train_conditioned_neural_baselines.py --model mlp ... --no-structure`.
+같은 `prepared_controls`와 seed 42/model seed 42로 기존 구조 포함 MLP/cGAN(100 epoch),
+diffusion(150 epoch)과 짝지어 비교하세요. 각 모델 내 구조 유무의 예산은 같지만 모델 간 최대 epoch는 다릅니다.
+최종 반응 평가는 기존 `evaluate_response.py`를 재사용합니다. 초기 비교는 구조 없는 3회 × 5-fold입니다.
+구조 유무 비교에는 새 count 실험 파일 대신 기존 구조 포함 실험의 Morgan 파일을 사용해야 합니다.
+합성 데이터에서 구조 파일이 없어도 세 신경망의 구조 제외 실행을 확인했습니다.

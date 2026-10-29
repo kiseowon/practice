@@ -98,6 +98,7 @@ def main():
     p.add_argument('--prepared',type=Path,required=True)
     p.add_argument('--structure',type=Path,required=True)
     p.add_argument('--structure-kind',choices=['binary','count'],default='binary')
+    p.add_argument('--no-structure',action='store_true')
     p.add_argument('--out',type=Path,required=True)
     p.add_argument('--model',choices=['mlp','cgan'],required=True)
     p.add_argument('--seed',type=int,default=42)

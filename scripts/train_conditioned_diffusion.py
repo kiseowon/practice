@@ -133,16 +133,21 @@ def run(args):
             raise ValueError('조건 ID 불일치')
         if not np.array_equal(table.iloc[ids].compound.to_numpy(),pairs.compound.to_numpy()):
             raise ValueError('대응표 화합물 불일치')
-    st = pd.read_csv(args.structure)
-    st.compound = st.compound.astype(str).str.strip()
-    if st.compound.duplicated().any():
-        raise ValueError('구조 화합물 중복')
-    excluded = {'compound','pubchem_cid','cid','smiles','status','name'}
-    bits = [c for c in st if c.lower() not in excluded and not c.lower().startswith('unnamed:') and pd.api.types.is_numeric_dtype(st[c])]
-    values = structure_values(st,bits,args.structure_kind)
-    st = pd.DataFrame(values,index=st.compound.to_numpy(),columns=bits)
-    st['structure_present'] = 1.
-    structure = st.reindex(sorted(pairs.compound.unique())).fillna(0)
+    if args.no_structure:
+        # 구조 bit와 구조 결측 표시를 모두 제외합니다.
+        structure = pd.DataFrame(index=sorted(pairs.compound.unique()))
+        print('구조정보 제외: 구조 특징 수=0',flush=True)
+    else:
+        st = pd.read_csv(args.structure)
+        st.compound = st.compound.astype(str).str.strip()
+        if st.compound.duplicated().any():
+            raise ValueError('구조 화합물 중복')
+        excluded = {'compound','pubchem_cid','cid','smiles','status','name'}
+        bits = [c for c in st if c.lower() not in excluded and not c.lower().startswith('unnamed:') and pd.api.types.is_numeric_dtype(st[c])]
+        values = structure_values(st,bits,args.structure_kind)
+        st = pd.DataFrame(values,index=st.compound.to_numpy(),columns=bits)
+        st['structure_present'] = 1.
+        structure = st.reindex(sorted(pairs.compound.unique())).fillna(0)
     groups = pairs.compound.to_numpy()
     names = np.random.default_rng(args.seed).permutation(sorted(set(groups)))
     mapping = {c:i % args.folds for i,c in enumerate(names)}
@@ -224,6 +229,7 @@ if __name__ == '__main__':
     p.add_argument('--prepared',type=Path,required=True)
     p.add_argument('--structure',type=Path,required=True)
     p.add_argument('--structure-kind',choices=['binary','count'],default='binary')
+    p.add_argument('--no-structure',action='store_true')
     p.add_argument('--out',type=Path,required=True)
     p.add_argument('--seed',type=int,default=42)
     p.add_argument('--model-seed',type=int,default=None)
