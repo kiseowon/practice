@@ -44,3 +44,40 @@ python scripts/conditioned_ivive.py \
 실제 연구실 데이터에서 준비 명령을 실행한 결과는 아직 검증하지 않았습니다.
 학습 코드는 후속 단계입니다. 이전 모듈 평균 기반 실험과 이 실험은 구분합니다.
 원본 데이터, 모델 가중치, 인증정보는 저장소에 포함하지 않습니다.
+
+## 조건부 Ridge 학습
+
+```bash
+OPENBLAS_NUM_THREADS=4 OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 \
+python -u scripts/train_conditioned_ridge.py \
+  --prepared /home/seowon1211/data1/conditioned_expression/prepared \
+  --structure /home/seowon1211/data1/struct_feats/struct_morgan2048.csv \
+  --out /home/seowon1211/data1/conditioned_expression/ridge_seed42
+```
+
+두 모델을 같은 화합물 외부 5-fold와 내부 3-fold에서 비교합니다.
+
+- `target_conditions`: 목표 투여량의 log1p, 단위, 시간, 용량 등급
+- `full_input`: 목표 조건 + 입력 농도·단위·시간·등급 + 입력 발현 PCA + Morgan과 구조 결측 표시
+
+입력 발현은 학습 화합물의 고유 조건에서만 표준화와 PCA(기본 64차원)를 적합합니다.
+출력은 PCA로 줄이지 않은 전체 probe 평균 발현값입니다. alpha 후보는 기본 100, 1000, 10000이며
+내부 목표 조건별 평균 예측 MSE로 선택합니다. 시간은 현재 선형 숫자 특징입니다.
+이 초기 Ridge는 조건 간 복잡한 비선형 상호작용을 직접 모델링하지 않습니다.
+
+전체 입력 모델은 동일 목표별 조합 가중치 합을 1로 맞추고, 기준 모델은 목표당 한 번 학습합니다.
+외부 평가는 입력 조건별 예측 오차와 모든 입력 조건의 예측을 평균한 목표 조건별 오차를 따로 저장합니다.
+따라서 목표별 평균 평가는 한 가지 입력만 이용하는 배포 상황과 구분해야 합니다.
+
+출력 파일:
+
+- `fold_metrics.csv`: fold별 목표 평균 RMSE와 조합 RMSE
+- `fold_*_*.npz`: 목표 조건 ID와 예측 probe 발현값
+- `fold_*_source_errors.csv.gz`: 입력·목표 조건별 오차
+- `probe_errors.csv.gz`: probe별 제곱오차 합과 평가 목표 수
+- `tuning.json`, `config.json`, `compound_folds.csv`: 설정 선택과 분할 기록
+
+합성 데이터(8개 화합물, 입력/목표 각 16조건, 6개 probe)에서 외부 2-fold·내부 2-fold,
+두 alpha 후보의 전체 실행과 저장을 확인했습니다. 실제 3,453-probe 데이터의 성능은 미검증입니다.
+절대 발현 RMSE만으로 독성 관련 변화량 보존이나 독성 예측 개선을 주장하지 않습니다.
+현재 약리·표적·RDKit descriptor·diffusion은 이 학습 코드에 포함하지 않습니다.
