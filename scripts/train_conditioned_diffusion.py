@@ -207,7 +207,7 @@ def run(args):
         # 실제 테스트 잔차를 PCA로 복원: 모델 성능이 아닌 압축 진단용
         actual_residual = target[ids]-base_test
         oracle = base_test+pca.inverse_transform(pca.transform(actual_residual))
-        for name,pred in [('target_conditions',base_test),('latent_ridge',pred_ridge),('latent_diffusion',pred_diff),('pca_reconstruction_diagnostic',oracle)]:
+        for name,pred in [('target_conditions',base_test),('latent_ridge',pred_ridge),(getattr(args,'neural_name','latent_diffusion'),pred_diff),('pca_reconstruction_diagnostic',oracle)]:
             uid, average = target_average(pred,ids)
             np.savez_compressed(args.out/f'fold_{fold}_{name}.npz',target_ids=uid,prediction=average)
             rmse = np.sqrt(np.mean((average-target[uid])**2))

@@ -168,3 +168,32 @@ PCA 정답 복원 진단은 변화량 모델 비교에서 제외합니다.
 합성 데이터에서 대조군 포함 준비→학습→평가 전체 실행과,
 예측 처리군·대조군의 공통 오프셋 상쇄를 확인했습니다.
 실제 서버 데이터의 반응 예측 성능은 아직 미검증입니다.
+
+## 빠른 MLP·조건부 GAN 비교
+
+```bash
+python -u scripts/train_conditioned_neural_baselines.py \
+  --model mlp \
+  --prepared /home/seowon1211/data1/conditioned_expression/prepared_controls \
+  --structure /home/seowon1211/data1/struct_feats/struct_morgan2048.csv \
+  --out /home/seowon1211/data1/conditioned_expression/controls_mlp_seed42
+```
+
+GAN은 `--model cgan`과 별도 출력 폴더를 사용합니다.
+기존 diffusion 실행기의 분할·조건 인코딩·PCA·기준선·설정 선택·평가 방식을 재사용합니다.
+기본 최대 100 epoch, 매 25 epoch 검증이며, 별도 내부 20% 화합물로 epoch·보정 강도를 선택합니다.
+설정 선택은 기존 diffusion과 같은 절대 발현 MSE이며, 최종 반응 평가는
+`evaluate_response.py`로 수행합니다. seed 42의 기존 diffusion 결과와 먼저 비교합니다.
+기존 diffusion은 최대 150 epoch였으므로 완전히 같은 학습 예산의 비교는 아닙니다.
+
+MLP는 조건 특징에서 잠재 잔차를 직접 예측합니다. cGAN은 조건과 16차원 Gaussian noise를
+생성기에 입력하고 판별기에 조건과 잠재 잔차를 제공합니다. 생성기는 재구성 MSE +
+0.1 × 적대 BCE 손실, 판별기는 실제/생성 BCE 손실로 학습합니다. 가중치는 고정 탐색 설정입니다.
+두 모델 모두 목표별 조합 수를 보정합니다. cGAN은 8개 샘플의 평균을 점예측으로 사용합니다.
+이 cGAN은 원본 AIVIVE GAN의 재현이 아닙니다. 작은 초기 설정의 결과로 GAN 전체의 우열을 주장하지 않습니다.
+MLP와 cGAN은 은닉층 128·64 노드이며 생성기 dropout 0.1, AdamW 학습률 0.001,
+weight decay 0.01을 사용합니다. cGAN 판별기는 은닉층 64·32 노드입니다.
+출력 모델 이름은 `latent_mlp`, `latent_cgan`입니다.
+
+두 모델을 합성 데이터에서 외부 2-fold로 실행하고, 기존 변화량 평가기와 연결해 결과 저장을 검증했습니다.
+실제 연구실 데이터 성능은 미검증입니다. 출력 폴더가 비어 있지 않으면 중단하며 fold 중간 재개는 지원하지 않습니다.
