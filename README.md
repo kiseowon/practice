@@ -126,3 +126,45 @@ CPU가 기본이며 GPU는 배정된 장치가 있는 경우에만 `--device cud
 생략하면 기존 실행처럼 `--seed`와 같은 값입니다. 같은 분할의 학습 seed 비교에서는
 평가 샘플링 seed를 고정합니다. 따라서 이는 학습 변동 비교이며 샘플링 변동은 별도입니다.
 예: `--seed 42 --model-seed 101`. 결과는 매번 서로 다른 출력 폴더에 저장하세요.
+
+## 대조군 대비 반응 평가
+
+기존 처리군 전용 예측에는 대조군 예측이 없으므로 새 목표 대응표로 재학습합니다.
+기존 준비 결과와 반복 실험 결과는 보존합니다.
+
+```bash
+python scripts/prepare_control_targets.py \
+  --prepared /home/seowon1211/data1/conditioned_expression/prepared \
+  --out /home/seowon1211/data1/conditioned_expression/prepared_controls
+
+OPENBLAS_NUM_THREADS=4 OMP_NUM_THREADS=4 MKL_NUM_THREADS=4 \
+python -u scripts/train_conditioned_diffusion.py \
+  --prepared /home/seowon1211/data1/conditioned_expression/prepared_controls \
+  --structure /home/seowon1211/data1/struct_feats/struct_morgan2048.csv \
+  --out /home/seowon1211/data1/conditioned_expression/controls_seed42 \
+  --seed 42 --model-seed 42
+
+python scripts/evaluate_response.py \
+  --prepared /home/seowon1211/data1/conditioned_expression/prepared_controls \
+  --predictions /home/seowon1211/data1/conditioned_expression/controls_seed42 \
+  --out /home/seowon1211/data1/conditioned_expression/controls_seed42/response
+```
+
+입력은 기존 in vitro 처리군을 유지하고, 목표에 in vivo 처리군과 대조군을 포함합니다.
+같은 화합물·시간·단위의 대조군 하나를 대응시켜
+예측 처리군−예측 대조군과 실제 처리군−실제 대조군을 비교합니다.
+실제 테스트 대조군은 평가 정답 계산에만 사용합니다.
+이 진단에서는 설정 선택 기준을 기존 절대 발현 MSE로 유지하므로,
+변화량 예측에 최적화된 모델과는 구분합니다. 대조군 추가로 학습 문제 자체가 바뀌므로
+이전 처리군 전용 실험과 모델 효과를 직접 비교하지 않습니다.
+
+`response_summary.csv`는 전체 목표·probe의 변화량 RMSE, 변화 없음(0) 예측 대비 비율,
+실제 변화 절댓값이 임계값 이상인 값의 방향 일치율을 기록합니다.
+방향 임계값은 기본 1.0이며 발현 척도의 단위입니다. log2 척도 여부를 별도 확인해야 합니다.
+변화 없음 기준선 외에 목표 조건 모델, 잠재 Ridge, diffusion을 서로 비교해야 합니다.
+`response_target_metrics.csv`와 `response_probe_errors.csv.gz`는 세부 분석용입니다.
+PCA 정답 복원 진단은 변화량 모델 비교에서 제외합니다.
+
+합성 데이터에서 대조군 포함 준비→학습→평가 전체 실행과,
+예측 처리군·대조군의 공통 오프셋 상쇄를 확인했습니다.
+실제 서버 데이터의 반응 예측 성능은 아직 미검증입니다.
