@@ -174,7 +174,7 @@ def run(args):
                 loss = score(base_val+strength*correction,ids,target)
                 if loss < best_ridge[0]:
                     best_ridge = (loss,alpha,strength)
-        seed_all(args.seed+1000+fold)
+        seed_all(args.model_seed+1000+fold)
         model = Denoiser(a.shape[1],y.shape[1],args.steps).to(device)
         opt = torch.optim.AdamW(model.parameters(),lr=.001,weight_decay=.01)
         tensors = [torch.tensor(x,dtype=torch.float32,device=device) for x in [a,y,w/w.mean()]]
@@ -193,7 +193,7 @@ def run(args):
         a,b,y,w,base_test,ids,decode,pca,latent_scale = prepare_split(args,pairs,tr,te,source,target,structure)
         ridge = Ridge(alpha=best_ridge[1]).fit(a,y,sample_weight=w)
         pred_ridge = base_test+best_ridge[2]*decode(ridge.predict(b))
-        seed_all(args.seed+1000+fold)
+        seed_all(args.model_seed+1000+fold)
         model = Denoiser(a.shape[1],y.shape[1],args.steps).to(device)
         opt = torch.optim.AdamW(model.parameters(),lr=.001,weight_decay=.01)
         tensors = [torch.tensor(x,dtype=torch.float32,device=device) for x in [a,y,w/w.mean()]]
@@ -226,6 +226,7 @@ if __name__ == '__main__':
     p.add_argument('--structure',type=Path,required=True)
     p.add_argument('--out',type=Path,required=True)
     p.add_argument('--seed',type=int,default=42)
+    p.add_argument('--model-seed',type=int,default=None)
     p.add_argument('--folds',type=int,default=5)
     p.add_argument('--input-components',type=int,default=64)
     p.add_argument('--latent-components',type=int,default=32)
@@ -240,4 +241,6 @@ if __name__ == '__main__':
     a=p.parse_args()
     if min(a.folds,a.steps)<2 or min(a.input_components,a.latent_components,a.epochs,a.check_every,a.samples,a.threads)<1 or min(a.alphas)<=0 or min(a.strengths)<0:
         p.error('분할·차원·학습 설정 범위 오류')
+    if a.model_seed is None:
+        a.model_seed = a.seed
     run(a)
