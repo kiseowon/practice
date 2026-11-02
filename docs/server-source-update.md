@@ -14,7 +14,7 @@
 - 113번째 저장 출력의 [structure_features.py](../scripts/structure_features.py)는 `GetMorganGenerator`로 folded count fingerprint를 만들고 그 양수 여부로 binary를 만듭니다. largest fragment 선택·중앙값 보간·상수 열 제거는 없습니다. 유효하지 않은 SMILES는 제외하고 audit에 기록합니다. 빈 출력 폴더를 요구합니다.
 - 114번째는 `conditioned_expression/morgan_matched/config.json`을 읽은 출력입니다. [관측 config](../results/morgan_matched_config.observed.json)에 radius 2, size 2048, chirality false, count_simulation false, RDKit 2026.03.6, SMILES 원본 경로가 기록되어 있습니다.
 
-따라서 radius 2는 이제 **최종 입력 경로의 저장 config에서 확인한 설정**으로 설명할 수 있습니다. 단순히 legacy 스크립트에서 추정한 설정이 아닙니다. 다만 실제 CSV checksum, 사용된 정확한 명령, 입력 전체 내용과 독립 재생성 검증은 없으므로 설정 기록과 실제 산출물의 완전한 일치까지 입증한 것은 아닙니다. legacy 코드와 matched 입력 생성 방식을 혼동하지 않습니다.
+따라서 radius 2는 이제 **최종 입력 경로의 저장 config에서 확인한 설정**으로 설명할 수 있습니다. 단순히 legacy 스크립트에서 추정한 설정이 아닙니다. 후속 사용자 서버 검사에서는 저장된 SMILES와 config로 Morgan을 다시 계산했고, 동일 RDKit 버전(2026.03.6)에서 137개 모두 기존 binary와 정확히 일치했습니다. 이 결과는 사용자 서버에서 수행한 검사이며 이 작업 환경에서 독립 재검증한 것은 아닙니다. 실제 입력·출력 checksum과 전체 파일을 이 환경에서 직접 대조한 것은 아닙니다. legacy 코드와 matched 입력 생성 방식을 혼동하지 않습니다.
 
 원본을 따라 새 Morgan 출력을 만들 때의 명령 형식은 다음과 같습니다. 이번에는 실행하지 않았습니다.
 
@@ -28,4 +28,14 @@ python scripts/structure_features.py --smiles /path/to/compound_pubchem_smiles.c
 
 ## 아직 없는 것
 
-KEGG snapshot의 probe–gene–pathway 매핑 생성 전체, `compounds_137` 구성, 원자료·완전한 데이터 준비 이력, 최종 입력 checksum은 여전히 없습니다. `reconstruct_mapping.py`는 별도 재구성본으로 남겨 두며 원본과 혼동하지 않습니다. 추가 외부 요청·데이터 생성·학습은 실행하지 않았습니다.
+KEGG In[89] 원본은 기존 실험 커널 실행 기록에서 복구했고 [recovered_kegg_original.ipynb](../notebooks/recovered_kegg_original.ipynb)에 In[90]과 함께 보존했습니다. KEGG snapshot 재현 검증은 아직 하지 않았습니다. `compounds_137` 구성, 원자료·완전한 데이터 준비 이력, 최종 입력 checksum은 여전히 확보되지 않았습니다. `reconstruct_mapping.py`는 별도 재구성본으로 남겨 두며 원본과 혼동하지 않습니다. 추가 외부 요청·데이터 생성·학습은 실행하지 않았습니다.
+
+
+## 현재 상태: 원본 확보와 결과 재현 검증
+
+| 대상 | 원본·설정 확보 | 결과 재현 검증 |
+| --- | --- | --- |
+| KEGG | 기존 실험 커널 실행 기록에서 In[89] 복구, recovered_kegg_original.ipynb에 In[90]과 함께 보존 | snapshot 재현 검증 미실행 |
+| Morgan | 서버 원본 생성 코드와 저장 config 확보 | 사용자 서버에서 저장된 SMILES·config로 재계산, 동일 RDKit 버전에서 binary 137개 전부 일치. 이 작업 환경의 독립 재검증은 아님 |
+
+원본 파일을 확보하거나 코드가 서로 일치하는 것을 확인한 사실과, 실제 저장 산출물을 재현해 비교한 사실은 구분합니다. 이번 상태 갱신에서는 다운로드·재생성·학습을 실행하지 않았습니다.

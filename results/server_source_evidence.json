@@ -11,8 +11,24 @@
   },
   "limitations": [
     "compounds_137 construction absent",
-    "KEGG mapping construction still absent",
-    "input/feature checksums absent",
-    "saved config is evidence of recorded settings, not independent regeneration validation"
-  ]
+    "input/feature checksums absent"
+  ],
+  "current_verification_status": {
+    "kegg": {
+      "original_recovered": true,
+      "recovery_origin": "original experimental kernel execution history",
+      "notebook": "notebooks/recovered_kegg_original.ipynb",
+      "snapshot_reproduction_verified": false
+    },
+    "morgan": {
+      "performed_by": "user on original server",
+      "method": "recalculated from saved SMILES and config; compared with existing binary",
+      "rdkit_version": "2026.03.6",
+      "same_rdkit_version": true,
+      "exact_matches": 137,
+      "mismatches": 0,
+      "independently_reverified_in_this_environment": false,
+      "evidence": "User report and saved output at position 116 / In[127] of 디퓨전 2차 시험 (2).ipynb"
+    }
+  }
 }

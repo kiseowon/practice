@@ -17,5 +17,7 @@
   ],
   "source_restored": true,
   "snapshot_reproduction_verified": false,
-  "external_requests_performed": false
+  "external_requests_performed": false,
+  "recovery_origin": "Original experimental kernel execution history; supplied by user",
+  "preserved_notebook": "notebooks/recovered_kegg_original.ipynb"
 }
