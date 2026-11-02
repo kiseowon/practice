@@ -1,0 +1,21 @@
+{
+  "source_file": "디퓨전 2차 시험.ipynb",
+  "source_sha256": "8194209fb3624b4496a1f688cb46a68fe93f8cb832a43fa80c60ef8062cc7189",
+  "source_cell_index": 93,
+  "source_output_index": 1,
+  "source_format": "saved text/html display table; six-decimal displayed values, not raw predictions",
+  "run": "vanilla_information_matrix_20261102_040702_9210e0",
+  "scope": "12 conditions: MLP/cGAN/epsilon-DDPM x structure off/on x mean pathway off/on; not the 9-condition sparse comparison",
+  "recomputed": false,
+  "meeting_notebook": {
+    "source_file": "연구미팅 1차 재현.ipynb",
+    "source_sha256": "e8431a10ab428966cc1ed20acf7a552a5696ca40464e9aa00dd8f71b2ae61420",
+    "repository_file": "notebooks/research_meeting_reproduction.ipynb",
+    "code_modified": false
+  },
+  "limitations": [
+    "Uploaded trial notebook does not contain the final 9-condition sparse result table.",
+    "Meeting notebook displays the 9-condition sparse table from a server CSV; it was not trained here.",
+    "Raw inputs and predictions were not available or re-evaluated."
+  ]
+}

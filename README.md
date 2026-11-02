@@ -4,6 +4,10 @@
 
 ## 실행
 
+미팅용 단계별 코드는 첨부 `연구미팅 1차 재현.ipynb`를 그대로 보존한 [연구미팅 재현 노트북](notebooks/research_meeting_reproduction.ipynb)입니다. 서버 데이터·기존 결과·무작위 mask가 필요하며, 함수 정의와 미학습 검증 예측을 포함합니다. 아래 기존 학습 노트북들과 용도를 구분하세요. 이번 갱신에서 추가 학습은 실행하지 않았습니다.
+
+실제 시험 첨부 `디퓨전 2차 시험.ipynb`의 마지막 완료 12조건 결과는 [별도 CSV](results/diffusion_second_trial_mean_pathway_comparison.csv)에 옮겼습니다. 이 표는 **구조 on/off × 평균 pathway on/off**이며 아래 최종 9조건 sparse 표와 다른 실험입니다. [첨부 파일 반영 기록](docs/meeting-notebook-source.md)에 출처와 차이를 정리했습니다.
+
 ```bash
 python -m pip install -r requirements.txt
 jupyter lab

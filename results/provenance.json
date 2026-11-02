@@ -13,5 +13,11 @@
     "TNFÉø",
     "tunicamycin"
   ],
-  "environment": "CPU code; lab environment package versions and exact input checksums not captured"
+  "environment": "CPU code; lab environment package versions and exact input checksums not captured",
+  "meeting_notebook_evidence": {
+    "file": "notebooks/research_meeting_reproduction.ipynb",
+    "cell_index": 15,
+    "evidence": "Saved response RMSE table matches all nine rows; not a new training run"
+  },
+  "user_confirmation": "User confirmed the nine structure-on sparse conditions are a separate completed server experiment; the 12-condition mean-pathway trial is an earlier experiment. Original server comparison.csv was not attached in this update."
 }
