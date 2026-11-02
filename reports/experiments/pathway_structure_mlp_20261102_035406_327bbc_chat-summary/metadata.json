@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "run_id": "pathway_structure_mlp_20261102_035406_327bbc_chat-summary",
+  "recorded_at_seoul": "2026-11-02T13:24:21+09:00",
+  "provenance": "user-pasted-table",
+  "note": "사용자가 대화에 공유한 소수점 6자리 결과표에서 기록했습니다. 서버 원본 CSV와 config.json은 읽지 않았으므로 실제 학습 설정과 코드 버전은 미확인입니다. 서버 원본은 원래 실행 폴더명으로 별도 등록할 수 있습니다.",
+  "source_filename": "comparison.csv",
+  "content_sha256": "a5de256fa3d96b6027ba7a2e008d4839f3b09619c9f83d57a6c67c86763e99b3",
+  "source_file_sha256": "2e83d36a8df4dcb9687704ca8f4e70e4c54b58c212a4305b1bcf8f73e96b9d9b",
+  "experiment_config": {},
+  "config_status": "not provided",
+  "training_code_revision": null,
+  "collection_runtime": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "pandas": "2.2.3",
+    "scikit-learn": "1.8.0"
+  }
+}

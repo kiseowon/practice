@@ -1,0 +1,5 @@
+model,family,structure,pathway,absolute_rmse,response_rmse,zero_response_rmse,ratio_to_no_change,pair_rmse,selected_epoch,parameters
+expression,MLP,False,False,0.324497,0.312818,0.330116,0.9476,0.323218,10,839933
+expression+structure,MLP,True,False,0.338225,0.311451,0.330116,0.943459,0.333547,10,839933
+expression+pathway,MLP,False,True,0.324664,0.316732,0.330116,0.959456,0.323025,15,839933
+expression+structure+pathway,MLP,True,True,0.33334,0.309828,0.330116,0.938541,0.329823,10,839933
