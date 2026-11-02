@@ -1,0 +1,75 @@
+{
+  "files": [
+    {
+      "name": "READ_ME_FIRST.md",
+      "sha256": "36c525bcfd34e1c1725cdd852d677bae6ce7d900b8d53f4739e4464d6570ba19"
+    },
+    {
+      "name": "compound_pubchem_smiles.csv",
+      "sha256": "c8efe7791d44de66923208cf8e1d48a10607ce40e3b455d053b22349817b7dc7"
+    },
+    {
+      "name": "structure_features.py",
+      "sha256": "21c2ef36573ac94114788028c93e6d405080e89e6dbb9d9aecd3b1633cbd3da9"
+    },
+    {
+      "name": "structure_audit.csv",
+      "sha256": "99f5b26d6673b6f798eb6176ed4456d142fa9efc8392fe3987dfba50b9ea4c53"
+    },
+    {
+      "name": "config (3).json",
+      "sha256": "2138db4960bb35725eacb65f2f4f0d1ec2dcf704ab1373d4bd9436d73e6e1d4c"
+    },
+    {
+      "name": "comparison (2).csv",
+      "sha256": "658e2b570361d657658e300fe14403fef26fa3fa37831854cb6f4cae88a9e041"
+    },
+    {
+      "name": "morgan_count.csv",
+      "sha256": "44f36179a950e90937b42492ef1db3fbea7cd7144fc1efbcfc0d63abd342a4be"
+    },
+    {
+      "name": "morgan_binary.csv",
+      "sha256": "6ce0330b2ab02ad54f54a751a0860c10582d8636ffc48e20378baaaa76bf575f"
+    },
+    {
+      "name": "config (2).json",
+      "sha256": "414d93f95c85ee14cb07f794f68517b6058c3574d95a7b1b020999f85a28b431"
+    },
+    {
+      "name": "randomization_audit.json",
+      "sha256": "23670604398d90c82c0fa908517f7db5b75bb222979463374db558a9157f77ba"
+    }
+  ],
+  "checks": {
+    "binary_shape": [
+      137,
+      2048
+    ],
+    "count_shape": [
+      137,
+      2048
+    ],
+    "binary_equals_positive_count": true,
+    "compound_sets_match_smiles_and_audit": true,
+    "smiles_rows": 137,
+    "audit_rows": 137,
+    "generator_ast_matches_repository": true,
+    "config_matches_previous_saved_output": true,
+    "server_comparison_rows": 4,
+    "MLP_modes_matching_GitHub_at_six_decimals": [
+      "none",
+      "sparse",
+      "random_sparse"
+    ]
+  },
+  "limitations": [
+    "No Morgan regeneration or RDKit execution performed",
+    "No expression arrays or raw predictions supplied",
+    "No KEGG snapshot/provenance/raw responses supplied",
+    "No random_membership.npy supplied; degree preservation is reported by audit, not independently checked",
+    "No nine-row generative-model comparison supplied; comparison attachment is four MLP rows",
+    "No manifest supplied"
+  ],
+  "publication_note": "Report only; source datasets remain outside this repository. Earlier limitations describe this individual check; see docs/verification-status.md for current combined status."
+}

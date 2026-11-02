@@ -1,0 +1,1164 @@
+
+===== 23번째 셀 | In[26] =====
+import numpy as np
+import pandas as pd
+import torch
+import torch.nn as nn
+import copy
+
+from torch.utils.data import TensorDataset, DataLoader
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_error
+from scipy.stats import pearsonr
+
+
+# ============================================================
+# 안전 설정: CPU만 사용
+# ============================================================
+
+device = torch.device("cpu")
+
+# CPU thread도 과도하게 쓰지 않도록 제한
+torch.set_num_threads(2)
+
+print("Device:", device)
+print("PyTorch CPU threads:", torch.get_num_threads())
+
+
+# ============================================================
+# MLP
+# A/B 모두 같은 구조
+# input dimension만 다름
+# ============================================================
+
+class CompareMLP(nn.Module):
+
+    def __init__(self, input_dim):
+
+        super().__init__()
+
+        self.net = nn.Sequential(
+            nn.Linear(input_dim, 256),
+            nn.ReLU(),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Linear(128, 109)
+        )
+
+    def forward(self, x):
+        return self.net(x)
+
+
+# ============================================================
+# 모델 하나 학습하는 함수
+# ============================================================
+
+def train_model(
+    X_train,
+    Y_train,
+    X_val,
+    Y_val,
+    seed
+):
+
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+
+    Xtr = torch.tensor(X_train, dtype=torch.float32)
+    Ytr = torch.tensor(Y_train, dtype=torch.float32)
+
+    Xva = torch.tensor(X_val, dtype=torch.float32)
+    Yva = torch.tensor(Y_val, dtype=torch.float32)
+
+    # generator를 따로 고정해서
+    # A/B의 batch shuffle도 최대한 동일하게 맞춤
+    generator = torch.Generator()
+    generator.manual_seed(seed)
+
+    loader = DataLoader(
+        TensorDataset(Xtr, Ytr),
+        batch_size=32,
+        shuffle=True,
+        generator=generator,
+        num_workers=0
+    )
+
+    model = CompareMLP(
+        input_dim=X_train.shape[1]
+    ).to(device)
+
+    criterion = nn.MSELoss()
+
+    optimizer = torch.optim.Adam(
+        model.parameters(),
+        lr=1e-3
+    )
+
+    best_val = float("inf")
+    best_state = None
+
+    patience = 30
+    patience_count = 0
+
+    for epoch in range(500):
+
+        # ---------------- TRAIN ----------------
+        model.train()
+
+        for xb, yb in loader:
+
+            xb = xb.to(device)
+            yb = yb.to(device)
+
+            optimizer.zero_grad()
+
+            pred = model(xb)
+
+            loss = criterion(pred, yb)
+
+            loss.backward()
+            optimizer.step()
+
+
+        # ---------------- VALIDATION ----------------
+        model.eval()
+
+        with torch.no_grad():
+
+            val_pred = model(
+                Xva.to(device)
+            )
+
+            val_loss = criterion(
+                val_pred,
+                Yva.to(device)
+            ).item()
+
+
+        if val_loss < best_val:
+
+            best_val = val_loss
+
+            best_state = copy.deepcopy(
+                model.state_dict()
+            )
+
+            patience_count = 0
+
+        else:
+
+            patience_count += 1
+
+
+        if patience_count >= patience:
+            break
+
+
+    model.load_state_dict(best_state)
+
+    return model, best_val
+
+
+# ============================================================
+# 반복 실험
+# ============================================================
+
+results = []
+
+# 우선 5개만
+SEEDS = [0, 1, 2, 3, 4]
+
+all_compounds = np.array(
+    sorted(data["compound"].unique())
+)
+
+
+for seed in SEEDS:
+
+    print(f"\n===== SEED {seed} =====")
+
+
+    # --------------------------------------------------------
+    # 1. Compound-level split
+    # --------------------------------------------------------
+
+    train_comp, temp_comp = train_test_split(
+        all_compounds,
+        test_size=0.30,
+        random_state=seed
+    )
+
+    val_comp, test_comp = train_test_split(
+        temp_comp,
+        test_size=0.50,
+        random_state=seed
+    )
+
+
+    train_m = data["compound"].isin(train_comp).to_numpy()
+    val_m   = data["compound"].isin(val_comp).to_numpy()
+    test_m  = data["compound"].isin(test_comp).to_numpy()
+
+
+    # --------------------------------------------------------
+    # 2. Raw data
+    # --------------------------------------------------------
+
+    X_vitro = data[
+        X_vitro_cols
+    ].to_numpy(dtype=np.float32)
+
+    X_struct = data[
+        structure_cols
+    ].to_numpy(dtype=np.float32)
+
+    Y_raw = data[
+        Y_vivo_cols
+    ].to_numpy(dtype=np.float32)
+
+
+    # --------------------------------------------------------
+    # 3. Scaler
+    # TRAIN ONLY
+    # --------------------------------------------------------
+
+    vitro_scaler = StandardScaler()
+
+    Xtr_v = vitro_scaler.fit_transform(
+        X_vitro[train_m]
+    )
+
+    Xva_v = vitro_scaler.transform(
+        X_vitro[val_m]
+    )
+
+    Xte_v = vitro_scaler.transform(
+        X_vitro[test_m]
+    )
+
+
+    struct_scaler = StandardScaler()
+
+    Xtr_s = struct_scaler.fit_transform(
+        X_struct[train_m]
+    )
+
+    Xva_s = struct_scaler.transform(
+        X_struct[val_m]
+    )
+
+    Xte_s = struct_scaler.transform(
+        X_struct[test_m]
+    )
+
+
+    y_scaler_loop = StandardScaler()
+
+    Ytr = y_scaler_loop.fit_transform(
+        Y_raw[train_m]
+    )
+
+    Yva = y_scaler_loop.transform(
+        Y_raw[val_m]
+    )
+
+
+    # --------------------------------------------------------
+    # 4. Model A
+    # vitro only
+    # --------------------------------------------------------
+
+    model_A_loop, val_A = train_model(
+        Xtr_v,
+        Ytr,
+        Xva_v,
+        Yva,
+        seed
+    )
+
+
+    # --------------------------------------------------------
+    # 5. Model B
+    # vitro + structure
+    # --------------------------------------------------------
+
+    Xtr_B_loop = np.concatenate(
+        [Xtr_v, Xtr_s],
+        axis=1
+    )
+
+    Xva_B_loop = np.concatenate(
+        [Xva_v, Xva_s],
+        axis=1
+    )
+
+    Xte_B_loop = np.concatenate(
+        [Xte_v, Xte_s],
+        axis=1
+    )
+
+
+    model_B_loop, val_B = train_model(
+        Xtr_B_loop,
+        Ytr,
+        Xva_B_loop,
+        Yva,
+        seed
+    )
+
+
+    # --------------------------------------------------------
+    # 6. TEST
+    # --------------------------------------------------------
+
+    model_A_loop.eval()
+    model_B_loop.eval()
+
+    with torch.no_grad():
+
+        pred_A_scaled = model_A_loop(
+            torch.tensor(
+                Xte_v,
+                dtype=torch.float32
+            )
+        ).numpy()
+
+        pred_B_scaled = model_B_loop(
+            torch.tensor(
+                Xte_B_loop,
+                dtype=torch.float32
+            )
+        ).numpy()
+
+
+    pred_A_loop = y_scaler_loop.inverse_transform(
+        pred_A_scaled
+    )
+
+    pred_B_loop = y_scaler_loop.inverse_transform(
+        pred_B_scaled
+    )
+
+    true = Y_raw[test_m]
+
+
+    # --------------------------------------------------------
+    # 7. Metrics
+    # --------------------------------------------------------
+
+    rmse_A_loop = np.sqrt(
+        mean_squared_error(
+            true.flatten(),
+            pred_A_loop.flatten()
+        )
+    )
+
+    rmse_B_loop = np.sqrt(
+        mean_squared_error(
+            true.flatten(),
+            pred_B_loop.flatten()
+        )
+    )
+
+
+    r_A_loop = pearsonr(
+        true.flatten(),
+        pred_A_loop.flatten()
+    )[0]
+
+    r_B_loop = pearsonr(
+        true.flatten(),
+        pred_B_loop.flatten()
+    )[0]
+
+
+    results.append({
+
+        "seed": seed,
+
+        "test_compounds": len(test_comp),
+
+        "test_conditions": int(test_m.sum()),
+
+        "A_RMSE": rmse_A_loop,
+        "B_RMSE": rmse_B_loop,
+
+        "RMSE_change": (
+            rmse_B_loop - rmse_A_loop
+        ),
+
+        "A_r": r_A_loop,
+        "B_r": r_B_loop,
+
+        "r_change": (
+            r_B_loop - r_A_loop
+        )
+    })
+
+
+    print(
+        f"A: RMSE={rmse_A_loop:.4f}, "
+        f"r={r_A_loop:.4f}"
+    )
+
+    print(
+        f"B: RMSE={rmse_B_loop:.4f}, "
+        f"r={r_B_loop:.4f}"
+    )
+
+
+# ============================================================
+# 결과표
+# ============================================================
+
+results_df = pd.DataFrame(results)
+
+print("\n\n===== RESULTS =====")
+
+display(
+    results_df.round(4)
+)
+
+
+print("\n===== SUMMARY =====")
+
+print(
+    "A mean RMSE:",
+    round(results_df["A_RMSE"].mean(), 4)
+)
+
+print(
+    "B mean RMSE:",
+    round(results_df["B_RMSE"].mean(), 4)
+)
+
+print(
+    "Mean RMSE change (B-A):",
+    round(results_df["RMSE_change"].mean(), 4)
+)
+
+print()
+
+print(
+    "A mean r:",
+    round(results_df["A_r"].mean(), 4)
+)
+
+print(
+    "B mean r:",
+    round(results_df["B_r"].mean(), 4)
+)
+
+print(
+    "Mean r change (B-A):",
+    round(results_df["r_change"].mean(), 4)
+)
+
+print()
+
+print(
+    "B better RMSE:",
+    int((results_df["RMSE_change"] < 0).sum()),
+    "/",
+    len(results_df)
+)
+
+print(
+    "B better Pearson r:",
+    int((results_df["r_change"] > 0).sum()),
+    "/",
+    len(results_df)
+)
+
+===== 24번째 셀 | In[27] =====
+# ============================================================
+# MODEL S : STRUCTURE ONLY
+# Morgan 64D -> in vivo 109
+# 5-seed compound-level repeated split
+# ============================================================
+
+import numpy as np
+import pandas as pd
+import torch
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_error
+from scipy.stats import pearsonr
+
+
+# ------------------------------------------------------------
+# 서버 부담 최소화
+# ------------------------------------------------------------
+
+device = torch.device("cpu")
+torch.set_num_threads(2)
+
+print("Device:", device)
+print("CPU threads:", torch.get_num_threads())
+
+
+# ------------------------------------------------------------
+# Raw data
+# ------------------------------------------------------------
+
+X_struct_raw = data[
+    structure_cols
+].to_numpy(dtype=np.float32)
+
+Y_raw = data[
+    Y_vivo_cols
+].to_numpy(dtype=np.float32)
+
+all_compounds = np.array(
+    sorted(data["compound"].unique())
+)
+
+
+# ------------------------------------------------------------
+# 5 seeds
+# ------------------------------------------------------------
+
+SEEDS = [0, 1, 2, 3, 4]
+
+structure_results = []
+
+
+for seed in SEEDS:
+
+    print(f"\n===== SEED {seed} =====")
+
+
+    # ========================================================
+    # 1. 동일한 compound-level split
+    # ========================================================
+
+    train_comp, temp_comp = train_test_split(
+        all_compounds,
+        test_size=0.30,
+        random_state=seed
+    )
+
+    val_comp, test_comp = train_test_split(
+        temp_comp,
+        test_size=0.50,
+        random_state=seed
+    )
+
+
+    train_m = data["compound"].isin(train_comp).to_numpy()
+    val_m   = data["compound"].isin(val_comp).to_numpy()
+    test_m  = data["compound"].isin(test_comp).to_numpy()
+
+
+    # ========================================================
+    # 2. Structure scaler
+    # train에서만 fit
+    # ========================================================
+
+    struct_scaler = StandardScaler()
+
+    Xtr_s = struct_scaler.fit_transform(
+        X_struct_raw[train_m]
+    )
+
+    Xva_s = struct_scaler.transform(
+        X_struct_raw[val_m]
+    )
+
+    Xte_s = struct_scaler.transform(
+        X_struct_raw[test_m]
+    )
+
+
+    # ========================================================
+    # 3. Target scaler
+    # 역시 train에서만 fit
+    # ========================================================
+
+    y_scaler_s = StandardScaler()
+
+    Ytr = y_scaler_s.fit_transform(
+        Y_raw[train_m]
+    )
+
+    Yva = y_scaler_s.transform(
+        Y_raw[val_m]
+    )
+
+
+    # ========================================================
+    # 4. Structure-only model
+    # ========================================================
+
+    model_S, val_S = train_model(
+        Xtr_s,
+        Ytr,
+        Xva_s,
+        Yva,
+        seed
+    )
+
+
+    # ========================================================
+    # 5. Unseen-compound TEST
+    # ========================================================
+
+    model_S.eval()
+
+    with torch.no_grad():
+
+        pred_scaled_S = model_S(
+            torch.tensor(
+                Xte_s,
+                dtype=torch.float32
+            )
+        ).numpy()
+
+
+    pred_S = y_scaler_s.inverse_transform(
+        pred_scaled_S
+    )
+
+    true_S = Y_raw[test_m]
+
+
+    # ========================================================
+    # 6. Metrics
+    # ========================================================
+
+    rmse_S = np.sqrt(
+        mean_squared_error(
+            true_S.flatten(),
+            pred_S.flatten()
+        )
+    )
+
+    r_S = pearsonr(
+        true_S.flatten(),
+        pred_S.flatten()
+    )[0]
+
+
+    structure_results.append({
+
+        "seed": seed,
+
+        "test_compounds": len(test_comp),
+
+        "test_conditions": int(test_m.sum()),
+
+        "S_RMSE": rmse_S,
+
+        "S_r": r_S
+    })
+
+
+    print(
+        f"Structure only: "
+        f"RMSE={rmse_S:.4f}, "
+        f"r={r_S:.4f}"
+    )
+
+
+# ============================================================
+# 결과
+# ============================================================
+
+structure_df = pd.DataFrame(
+    structure_results
+)
+
+print("\n===== STRUCTURE-ONLY RESULTS =====")
+
+display(
+    structure_df.round(4)
+)
+
+
+print("\n===== STRUCTURE-ONLY SUMMARY =====")
+
+print(
+    "Mean RMSE:",
+    round(
+        structure_df["S_RMSE"].mean(),
+        4
+    )
+)
+
+print(
+    "Mean Pearson r:",
+    round(
+        structure_df["S_r"].mean(),
+        4
+    )
+)
+
+
+# ============================================================
+# 기존 A/B 결과와 합치기
+# ============================================================
+
+comparison = results_df.merge(
+    structure_df[
+        ["seed", "S_RMSE", "S_r"]
+    ],
+    on="seed"
+)
+
+comparison = comparison[
+    [
+        "seed",
+        "A_RMSE",
+        "B_RMSE",
+        "S_RMSE",
+        "A_r",
+        "B_r",
+        "S_r"
+    ]
+]
+
+
+print("\n===== A vs B vs STRUCTURE ONLY =====")
+
+display(
+    comparison.round(4)
+)
+
+
+print("\n===== MEAN PERFORMANCE =====")
+
+print(
+    f"Model A  | RMSE {comparison['A_RMSE'].mean():.4f}"
+    f" | r {comparison['A_r'].mean():.4f}"
+)
+
+print(
+    f"Model B  | RMSE {comparison['B_RMSE'].mean():.4f}"
+    f" | r {comparison['B_r'].mean():.4f}"
+)
+
+print(
+    f"Model S  | RMSE {comparison['S_RMSE'].mean():.4f}"
+    f" | r {comparison['S_r'].mean():.4f}"
+)
+
+===== 25번째 셀 | In[28] =====
+# ============================================================
+# MODEL SD : STRUCTURE + DOSE
+# Morgan 64D + Dose one-hot -> in vivo 109
+# ============================================================
+
+import numpy as np
+import pandas as pd
+import torch
+
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import mean_squared_error
+from scipy.stats import pearsonr
+
+
+# ============================================================
+# 서버 부담 최소화
+# ============================================================
+
+device = torch.device("cpu")
+torch.set_num_threads(2)
+
+print("Device:", device)
+print("CPU threads:", torch.get_num_threads())
+
+
+# ============================================================
+# 1. Structure
+# ============================================================
+
+X_struct_raw = data[
+    structure_cols
+].to_numpy(dtype=np.float32)
+
+
+# ============================================================
+# 2. Dose one-hot
+#
+# Low    = [1,0,0]
+# Middle = [0,1,0]
+# High   = [0,0,1]
+# ============================================================
+
+dose_onehot = pd.get_dummies(
+    data["dose"]
+)
+
+# 항상 동일한 순서로
+dose_onehot = dose_onehot.reindex(
+    columns=["Low", "Middle", "High"],
+    fill_value=0
+)
+
+X_dose = dose_onehot.to_numpy(
+    dtype=np.float32
+)
+
+print("\nDose columns:", list(dose_onehot.columns))
+print("Structure dimensions:", X_struct_raw.shape[1])
+print("Dose dimensions:", X_dose.shape[1])
+print(
+    "Total input dimensions:",
+    X_struct_raw.shape[1] + X_dose.shape[1]
+)
+
+
+# ============================================================
+# 3. Target
+# ============================================================
+
+Y_raw = data[
+    Y_vivo_cols
+].to_numpy(dtype=np.float32)
+
+all_compounds = np.array(
+    sorted(data["compound"].unique())
+)
+
+
+# ============================================================
+# 4. 5-seed experiment
+# ============================================================
+
+SEEDS = [0, 1, 2, 3, 4]
+
+sd_results = []
+
+
+for seed in SEEDS:
+
+    print(f"\n===== SEED {seed} =====")
+
+
+    # --------------------------------------------------------
+    # compound-level split
+    # --------------------------------------------------------
+
+    train_comp, temp_comp = train_test_split(
+        all_compounds,
+        test_size=0.30,
+        random_state=seed
+    )
+
+    val_comp, test_comp = train_test_split(
+        temp_comp,
+        test_size=0.50,
+        random_state=seed
+    )
+
+
+    train_m = data["compound"].isin(
+        train_comp
+    ).to_numpy()
+
+    val_m = data["compound"].isin(
+        val_comp
+    ).to_numpy()
+
+    test_m = data["compound"].isin(
+        test_comp
+    ).to_numpy()
+
+
+    # --------------------------------------------------------
+    # Structure scaler
+    # TRAIN에서만 fit
+    # --------------------------------------------------------
+
+    struct_scaler = StandardScaler()
+
+    Xtr_s = struct_scaler.fit_transform(
+        X_struct_raw[train_m]
+    )
+
+    Xva_s = struct_scaler.transform(
+        X_struct_raw[val_m]
+    )
+
+    Xte_s = struct_scaler.transform(
+        X_struct_raw[test_m]
+    )
+
+
+    # --------------------------------------------------------
+    # Structure + Dose
+    #
+    # dose one-hot은 0/1이므로 그대로 사용
+    # --------------------------------------------------------
+
+    Xtr_SD = np.concatenate(
+        [
+            Xtr_s,
+            X_dose[train_m]
+        ],
+        axis=1
+    )
+
+    Xva_SD = np.concatenate(
+        [
+            Xva_s,
+            X_dose[val_m]
+        ],
+        axis=1
+    )
+
+    Xte_SD = np.concatenate(
+        [
+            Xte_s,
+            X_dose[test_m]
+        ],
+        axis=1
+    )
+
+
+    # --------------------------------------------------------
+    # Y scaler
+    # TRAIN에서만 fit
+    # --------------------------------------------------------
+
+    y_scaler_sd = StandardScaler()
+
+    Ytr = y_scaler_sd.fit_transform(
+        Y_raw[train_m]
+    )
+
+    Yva = y_scaler_sd.transform(
+        Y_raw[val_m]
+    )
+
+
+    # --------------------------------------------------------
+    # MODEL SD 학습
+    # 앞에서 만든 train_model() 그대로 사용
+    # --------------------------------------------------------
+
+    model_SD, val_SD = train_model(
+        Xtr_SD,
+        Ytr,
+        Xva_SD,
+        Yva,
+        seed
+    )
+
+
+    # --------------------------------------------------------
+    # TEST
+    # --------------------------------------------------------
+
+    model_SD.eval()
+
+    with torch.no_grad():
+
+        pred_scaled_SD = model_SD(
+            torch.tensor(
+                Xte_SD,
+                dtype=torch.float32
+            )
+        ).numpy()
+
+
+    pred_SD = y_scaler_sd.inverse_transform(
+        pred_scaled_SD
+    )
+
+    true_SD = Y_raw[test_m]
+
+
+    # --------------------------------------------------------
+    # Metrics
+    # --------------------------------------------------------
+
+    rmse_SD = np.sqrt(
+        mean_squared_error(
+            true_SD.flatten(),
+            pred_SD.flatten()
+        )
+    )
+
+    r_SD = pearsonr(
+        true_SD.flatten(),
+        pred_SD.flatten()
+    )[0]
+
+
+    sd_results.append({
+
+        "seed": seed,
+
+        "test_compounds": len(test_comp),
+
+        "test_conditions": int(test_m.sum()),
+
+        "SD_RMSE": rmse_SD,
+
+        "SD_r": r_SD
+    })
+
+
+    print(
+        f"Structure + Dose: "
+        f"RMSE={rmse_SD:.4f}, "
+        f"r={r_SD:.4f}"
+    )
+
+
+# ============================================================
+# 5. 결과표
+# ============================================================
+
+sd_df = pd.DataFrame(
+    sd_results
+)
+
+print("\n===== STRUCTURE + DOSE RESULTS =====")
+
+display(
+    sd_df.round(4)
+)
+
+
+# ============================================================
+# 6. A / B / S / SD 전부 비교
+# ============================================================
+
+final_compare = (
+    results_df
+    .merge(
+        structure_df[
+            ["seed", "S_RMSE", "S_r"]
+        ],
+        on="seed"
+    )
+    .merge(
+        sd_df[
+            ["seed", "SD_RMSE", "SD_r"]
+        ],
+        on="seed"
+    )
+)
+
+
+print("\n===== FINAL COMPARISON =====")
+
+display(
+    final_compare[
+        [
+            "seed",
+
+            "A_RMSE",
+            "B_RMSE",
+            "S_RMSE",
+            "SD_RMSE",
+
+            "A_r",
+            "B_r",
+            "S_r",
+            "SD_r"
+        ]
+    ].round(4)
+)
+
+
+# ============================================================
+# 7. 평균
+# ============================================================
+
+print("\n===== MEAN PERFORMANCE =====")
+
+print(
+    f"A  vitro only          | "
+    f"RMSE {final_compare['A_RMSE'].mean():.4f} | "
+    f"r {final_compare['A_r'].mean():.4f}"
+)
+
+print(
+    f"B  vitro + structure   | "
+    f"RMSE {final_compare['B_RMSE'].mean():.4f} | "
+    f"r {final_compare['B_r'].mean():.4f}"
+)
+
+print(
+    f"S  structure only      | "
+    f"RMSE {final_compare['S_RMSE'].mean():.4f} | "
+    f"r {final_compare['S_r'].mean():.4f}"
+)
+
+print(
+    f"SD structure + dose    | "
+    f"RMSE {final_compare['SD_RMSE'].mean():.4f} | "
+    f"r {final_compare['SD_r'].mean():.4f}"
+)
+
+
+# ============================================================
+# 8. Dose 추가가 Structure-only보다 몇 번 좋아졌는지
+# ============================================================
+
+print("\n===== SD vs S =====")
+
+print(
+    "SD better RMSE:",
+    int(
+        (
+            final_compare["SD_RMSE"]
+            <
+            final_compare["S_RMSE"]
+        ).sum()
+    ),
+    "/ 5"
+)
+
+print(
+    "SD better Pearson r:",
+    int(
+        (
+            final_compare["SD_r"]
+            >
+            final_compare["S_r"]
+        ).sum()
+    ),
+    "/ 5"
+)
+
+print(
+    "Mean RMSE change (SD-S):",
+    round(
+        (
+            final_compare["SD_RMSE"]
+            -
+            final_compare["S_RMSE"]
+        ).mean(),
+        4
+    )
+)
+
+print(
+    "Mean r change (SD-S):",
+    round(
+        (
+            final_compare["SD_r"]
+            -
+            final_compare["S_r"]
+        ).mean(),
+        4
+    )
+)
+
+===== 26번째 셀 | In[29] =====
+# 현재 구조정보가 있는 137개 화합물 이름 확인
+
+compounds_137 = sorted(data["compound"].unique())
+
+print("화합물 수:", len(compounds_137))
+print()
+
+for i, compound in enumerate(compounds_137, 1):
+    print(f"{i:3d}. {compound}")

@@ -1,0 +1,19 @@
+{
+  "files": [
+    {
+      "file": "notebooks/metadata_session4_history.ipynb",
+      "sha256": "32b2f7ec7a1d90d322960ac6bb60b42166dcb559c513f4a3a23e5623d309c888"
+    },
+    {
+      "file": "notebooks/Untitled_first26_original.ipynb",
+      "sha256": "8ddcdeb21848d5df182265c568901c513c8f43e805e59a92e4e5a91d77a2adb6"
+    }
+  ],
+  "preserved_byte_identically": true,
+  "original_code_executed": false,
+  "session4_saved_outputs_present": false,
+  "corrected_csv_generator_attribution": "UNDETERMINED",
+  "reference_origin": "local Open-tggates_AllAttribute.tsv; upstream acquisition/version/hash unavailable",
+  "current_corrected_csv_supplied": false,
+  "prepared_regeneration_verified": false
+}

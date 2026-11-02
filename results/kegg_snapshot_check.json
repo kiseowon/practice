@@ -1,0 +1,72 @@
+{
+  "checks": {
+    "saved_raw_text_hashes_match_provenance": true,
+    "species": "Rattus norvegicus",
+    "probe_order_matches_prepared_probes": true,
+    "projection_shape": [
+      3453,
+      321
+    ],
+    "dtype": "float64",
+    "matched_probe_count": 3410,
+    "ambiguous_annotation_probes_excluded": 34,
+    "mapping_audit_matches_recovered_rules": true,
+    "all_pathway_audit_rows_match_recovered_filters": true,
+    "nonzero_edges": 19254,
+    "max_column_sum_error": 3.1086244689504383e-15,
+    "projection_columns_exactly_matching_recovered_float32_then_float64_normalized_formula": 321,
+    "max_projection_difference": 0.0,
+    "projection_array_sha256": "6c68ea1c9e76181e5e67219ff26c82284a758fbad23408d715bd3158eb55854a",
+    "projection_array_hash_matches_randomization_audit": true
+  },
+  "method": "Offline read-only checks of supplied KEGG responses, annotation and snapshot; independently evaluated recovered mapping/filter/weight formulas in memory. Original generator not executed; no snapshot files generated; no remote requests.",
+  "limitations": [
+    "No random_membership.npy: degree preservation and overlap not independently checked",
+    "No expression arrays or raw predictions: model metrics not recomputed",
+    "No new KEGG retrieval: confirms supplied snapshot against supplied historical raw sources, not current KEGG",
+    "Full end-to-end study reproduction not performed"
+  ],
+  "files": [
+    {
+      "name": "final_rat_genes (4).csv",
+      "sha256": "ca3ffb5c1e979bb401de0d7248527f53e5836ced265778ad0d5849d49a922c13"
+    },
+    {
+      "name": "genes.txt",
+      "sha256": "3a3bc96f1b06965956daac44a8d9e1702a4aad4b0a5bb5f4a9f5b183a23ee031"
+    },
+    {
+      "name": "projection.npy",
+      "sha256": "ede461d9c9c356c411c3646a1dc6c52ee016b447c146cbb131547afb947f4979"
+    },
+    {
+      "name": "pathway_audit.csv",
+      "sha256": "920ed7bf7d554b0e0d635c201b04bdea5f7718f537ba0f57c4bfbe2acc0624ce"
+    },
+    {
+      "name": "probe_mapping_audit.csv",
+      "sha256": "3df7d5b813a0dbffba2fe77955b32ea1f3c965739f6f6edf43361e09913d750e"
+    },
+    {
+      "name": "membership.txt",
+      "sha256": "961672200c1e45f1715fcf8eab2ff1f5425059e4796796366856e28c61de03c9"
+    },
+    {
+      "name": "pathways.txt",
+      "sha256": "c907580d3365d72c83ebcf425612c0e99ed728f7332d0a2d2ae637d9b6ec7613"
+    },
+    {
+      "name": "provenance.json",
+      "sha256": "1bf22adaceef111d9b9c6991715963a32b0811bd73cdb902d15a54efcba4887d"
+    },
+    {
+      "name": "probes.csv",
+      "sha256": "ce30b279405b7065f2bcf27cc3820b12017fbb4af2358b35b6f28fb46bf4b6db"
+    },
+    {
+      "name": "randomization_audit.json",
+      "sha256": "23670604398d90c82c0fa908517f7db5b75bb222979463374db558a9157f77ba"
+    }
+  ],
+  "publication_note": "Report only; source datasets remain outside this repository. Earlier limitations describe this individual check; see docs/verification-status.md for current combined status."
+}

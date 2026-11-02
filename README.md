@@ -4,7 +4,9 @@
 
 ## 실행
 
-[추가 확인된 서버 원본](docs/server-source-update.md): [SMILES 매핑](notebooks/smiles_mapping_original.ipynb), [matched Morgan 생성](scripts/structure_features.py), [sparse 9조건 실행 기록](notebooks/sparse_pathway_server_record.ipynb)을 반영했습니다. [KEGG In89·In90 원본을 복구](docs/kegg-original-recovered.md)했습니다. snapshot 재현 일치 검증은 미실행입니다. Morgan은 사용자 서버에서 저장 SMILES·config와 동일 RDKit 버전으로 재계산해 137개 binary 전부 일치했습니다. 이 작업 환경의 독립 재검증은 아닙니다.
+[현재 연구 상태](docs/research-state.md) · [원본 확보·검증 상태](docs/verification-status.md) · [메타데이터 보정·137개 선정 이력](docs/metadata-and-compound-history.md)
+
+[추가 확인된 서버 원본](docs/server-source-update.md): [SMILES 매핑](notebooks/smiles_mapping_original.ipynb), [matched Morgan 생성](scripts/structure_features.py), [sparse 9조건 실행 기록](notebooks/sparse_pathway_server_record.ipynb)을 반영했습니다. [KEGG In89·In90 원본을 복구](docs/kegg-original-recovered.md)했습니다. 후속 첨부의 저장 KEGG 원문·annotation으로 snapshot의 321개 열과 audit가 정확히 일치함을 이 환경에서 확인했습니다. Morgan은 사용자 서버에서 저장 SMILES·config와 동일 RDKit 버전으로 재계산해 137개 binary 전부 일치했습니다. 이 작업 환경의 독립 재검증은 아닙니다.
 
 매핑부터 확인할 때는 [매핑 준비·연구 재시작 안내](docs/mapping-and-restart.md)를 보세요. [매핑 재구성 코드](scripts/reconstruct_mapping.py)는 원본과 구분해 추가했고, [In[77]부터의 실험 원본 보존본](notebooks/research_restart_original.ipynb)은 필요한 In[76] 정의부터 포함합니다. 원본 보존본에는 학습 호출이 있으므로 실행 승인 없이 Run All하지 마세요.
 

@@ -1,4 +1,6 @@
-# KEGG 원본 복구 완료·snapshot 재현 검증 미실행
+# KEGG 원본 복구와 후속 snapshot 검증
+
+> 원본 복구 후 첨부 데이터의 오프라인 대조를 완료했습니다. 원문 hash·audit·가중치 321열 모두 일치했습니다. [현재 검증 상태](verification-status.md)를 보세요. 아래 복구 당시 미실행 기록과 구분합니다.
 
 KEGG In[89] 원본은 기존 실험 커널 실행 기록에서 복구했으며, 사용자가 그 파일을 제공했습니다. [복구 노트북](../notebooks/recovered_kegg_original.ipynb), [In89 생성 원본](../scripts/original_server/In89_kegg_generation.py), [In90 저장 수정 원본](../scripts/original_server/In90_kegg_save_fix.py)을 바이트 그대로 보존했습니다. Python 파일은 노트북의 두 코드 셀과 각각 정확히 같으며 In90은 이전 첨부의 저장 코드와도 정확히 같습니다. [검사·hash 기록](../results/kegg_recovered_source_evidence.json).
 

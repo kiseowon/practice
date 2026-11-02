@@ -26,5 +26,7 @@
     "source_cell_index": 104,
     "evidence": "Saved nine-row output matches absolute_rmse, response_rmse and selected_epoch; no recomputation from raw predictions"
   },
-  "structure_config_evidence": "results/morgan_matched_config.observed.json"
+  "structure_config_evidence": "results/morgan_matched_config.observed.json",
+  "server_aggregate_csv": "results/server_sparse_comparison.csv",
+  "verification_status_document": "docs/verification-status.md"
 }

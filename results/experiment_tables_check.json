@@ -1,0 +1,72 @@
+{
+  "checks": {
+    "probe_count": 3453,
+    "vitro_conditions": 1675,
+    "vivo_conditions": 2224,
+    "pairs": 19936,
+    "compounds": 140,
+    "split_counts": {
+      "inner_train": 89,
+      "outer_test": 28,
+      "inner_validation": 23
+    },
+    "split_matches_repository_seed42_algorithm": true,
+    "condition_ids_compounds_and_pair_metadata_align": true,
+    "duplicate_pairs": 0,
+    "matched_controls_present": true,
+    "test_targets": 448,
+    "test_treated_targets": 336,
+    "server_result_rows": 9,
+    "all_nine_rows_match_GitHub_six_decimal_metrics_and_epoch": true,
+    "progress_six_generated_variants_report_complete": true
+  },
+  "files": [
+    {
+      "name": "config (1).json",
+      "sha256": "79daedf4c796a83c044806be56d20768aec6811406f52fd52fed629dc1e4c237"
+    },
+    {
+      "name": "progress.json",
+      "sha256": "f71f14c4948a1a37fd8595a9afa142fcb5ce5a99a0d981b54db6a0d8023921a7"
+    },
+    {
+      "name": "comparison.csv",
+      "sha256": "f5e798c3c7467a416d0a7d5c5e7a8f6ea2586534e621f4d25c521d0979703333"
+    },
+    {
+      "name": "config.json",
+      "sha256": "2049d4bb22ef5caf0b2b95852c21b1f0d8a853228b4311439e58776a8fb6739a"
+    },
+    {
+      "name": "probes.csv",
+      "sha256": "ce30b279405b7065f2bcf27cc3820b12017fbb4af2358b35b6f28fb46bf4b6db"
+    },
+    {
+      "name": "pairs.csv.gz",
+      "sha256": "82bb08a458e9279c19b6cc3a78eb50a9ca2d62e6e3295ac338622dd6f2c89d97"
+    },
+    {
+      "name": "comparison (1).csv",
+      "sha256": "eca753f2207763916c4e73c699e67becabb5ce85b166e39ebd19611df7e251d6"
+    },
+    {
+      "name": "vitro_conditions.csv",
+      "sha256": "7ea1ce961027782a88c422175d82d399a851d669fec75a0cb7bb7e1555d8ffb2"
+    },
+    {
+      "name": "vivo_conditions.csv",
+      "sha256": "8aef635fc484861e7d39926f5c69a00e201b06ef612cf12bdf46299f7b663278"
+    },
+    {
+      "name": "compound_split.csv",
+      "sha256": "92e53521baa193e23fb61e9f136235df8bf34cecc2e3cfc0c500638b853f403e"
+    }
+  ],
+  "limitations": [
+    "Read-only file consistency checks only; no training or prediction regeneration",
+    "Progress complete is a server record, not validation of checkpoint files",
+    "Expression NPY and raw predictions absent; RMSE not recomputed",
+    "KEGG snapshot and random mask absent; mapping/projection checks pending"
+  ],
+  "publication_note": "Report only; source datasets remain outside this repository. Earlier limitations describe this individual check; see docs/verification-status.md for current combined status."
+}

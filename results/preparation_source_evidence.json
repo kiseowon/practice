@@ -1,0 +1,20 @@
+{
+  "files": [
+    {
+      "file": "scripts/original_server/prepare_control_targets.py",
+      "sha256": "0830d532787d74a32aea37a98cdfd96fb38f3bb9f1d2ce1bfb95f22bd73c3bb6"
+    },
+    {
+      "file": "scripts/original_server/conditioned_ivive.py",
+      "sha256": "87a306c090eb1d0fee82f0602e70e21a73bfef9561b98b30e84c691ef890500a"
+    },
+    {
+      "file": "scripts/original_server/compound_list_original_cells.txt",
+      "sha256": "c278a0bff95d077b63b40905eb9cbb1d5ee4519e2a23ad87dd918378a5a28cb8"
+    }
+  ],
+  "source_read_and_preserved": true,
+  "original_code_executed": false,
+  "prepared_data_regeneration_verified": false,
+  "compound_list_data_definition_present": false
+}
