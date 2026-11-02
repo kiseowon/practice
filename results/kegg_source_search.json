@@ -1,0 +1,692 @@
+{
+  "keywords": [
+    "rest.kegg.jp",
+    "projection.npy",
+    "probe_mapping_audit",
+    "matched_genes",
+    "np.column_stack",
+    "np.save"
+  ],
+  "scope": "All four attached notebook files, sources and saved text outputs; no external requests",
+  "records": [
+    {
+      "file": "디퓨전 2차 시험.ipynb",
+      "sha256": "8194209fb3624b4496a1f688cb46a68fe93f8cb832a43fa80c60ef8062cc7189",
+      "cell_count": 95,
+      "hits": [
+        {
+          "position_1based": 5,
+          "execution_count": 8,
+          "source_keywords": [
+            "np.column_stack"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 20,
+          "execution_count": 23,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 23,
+          "execution_count": 26,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 29,
+          "execution_count": 35,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 33,
+          "execution_count": 39,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 34,
+          "execution_count": 40,
+          "source_keywords": [
+            "np.column_stack"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 38,
+          "execution_count": 44,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 39,
+          "execution_count": 45,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 43,
+          "execution_count": 49,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 59,
+          "execution_count": 65,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 60,
+          "execution_count": 66,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 65,
+          "execution_count": 71,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 66,
+          "execution_count": 72,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 70,
+          "execution_count": 76,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 73,
+          "execution_count": 79,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 77,
+          "execution_count": 83,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 78,
+          "execution_count": 84,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 83,
+          "execution_count": 90,
+          "source_keywords": [
+            "projection.npy",
+            "probe_mapping_audit",
+            "matched_genes",
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": [
+            "matched_genes"
+          ]
+        },
+        {
+          "position_1based": 84,
+          "execution_count": 91,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 85,
+          "execution_count": 92,
+          "source_keywords": [
+            "projection.npy"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 89,
+          "execution_count": 96,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 90,
+          "execution_count": 97,
+          "source_keywords": [
+            "projection.npy"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 91,
+          "execution_count": 98,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        }
+      ]
+    },
+    {
+      "file": "연구미팅 1차 재현.ipynb",
+      "sha256": "e8431a10ab428966cc1ed20acf7a552a5696ca40464e9aa00dd8f71b2ae61420",
+      "cell_count": 32,
+      "hits": [
+        {
+          "position_1based": 2,
+          "execution_count": 2,
+          "source_keywords": [
+            "projection.npy"
+          ],
+          "output_keywords": []
+        }
+      ]
+    },
+    {
+      "file": "디퓨전 2차 시험 (1).ipynb",
+      "sha256": "eba15d2c2afd973af75b7c4cd3896ba49b9886c0a966f73469cb543186c1b7bc",
+      "cell_count": 116,
+      "hits": [
+        {
+          "position_1based": 5,
+          "execution_count": 8,
+          "source_keywords": [
+            "np.column_stack"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 20,
+          "execution_count": 23,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 23,
+          "execution_count": 26,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 29,
+          "execution_count": 35,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 33,
+          "execution_count": 39,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 34,
+          "execution_count": 40,
+          "source_keywords": [
+            "np.column_stack"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 38,
+          "execution_count": 44,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 39,
+          "execution_count": 45,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 43,
+          "execution_count": 49,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 59,
+          "execution_count": 65,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 60,
+          "execution_count": 66,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 65,
+          "execution_count": 71,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 66,
+          "execution_count": 72,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 70,
+          "execution_count": 76,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 73,
+          "execution_count": 79,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 77,
+          "execution_count": 83,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 78,
+          "execution_count": 84,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 83,
+          "execution_count": 90,
+          "source_keywords": [
+            "projection.npy",
+            "probe_mapping_audit",
+            "matched_genes",
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": [
+            "matched_genes"
+          ]
+        },
+        {
+          "position_1based": 84,
+          "execution_count": 91,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 85,
+          "execution_count": 92,
+          "source_keywords": [
+            "projection.npy"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 89,
+          "execution_count": 96,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 90,
+          "execution_count": 97,
+          "source_keywords": [
+            "projection.npy"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 91,
+          "execution_count": 98,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 98,
+          "execution_count": 105,
+          "source_keywords": [
+            "projection.npy",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 100,
+          "execution_count": 108,
+          "source_keywords": [
+            "projection.npy",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 101,
+          "execution_count": 109,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 103,
+          "execution_count": 111,
+          "source_keywords": [
+            "projection.npy",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 104,
+          "execution_count": 112,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        }
+      ]
+    },
+    {
+      "file": "디퓨전 2차 시험.ipynb",
+      "sha256": "8194209fb3624b4496a1f688cb46a68fe93f8cb832a43fa80c60ef8062cc7189",
+      "cell_count": 95,
+      "hits": [
+        {
+          "position_1based": 5,
+          "execution_count": 8,
+          "source_keywords": [
+            "np.column_stack"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 20,
+          "execution_count": 23,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 23,
+          "execution_count": 26,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 29,
+          "execution_count": 35,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 33,
+          "execution_count": 39,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 34,
+          "execution_count": 40,
+          "source_keywords": [
+            "np.column_stack"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 38,
+          "execution_count": 44,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 39,
+          "execution_count": 45,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 43,
+          "execution_count": 49,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 59,
+          "execution_count": 65,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 60,
+          "execution_count": 66,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 65,
+          "execution_count": 71,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 66,
+          "execution_count": 72,
+          "source_keywords": [
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 70,
+          "execution_count": 76,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 73,
+          "execution_count": 79,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 77,
+          "execution_count": 83,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 78,
+          "execution_count": 84,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 83,
+          "execution_count": 90,
+          "source_keywords": [
+            "projection.npy",
+            "probe_mapping_audit",
+            "matched_genes",
+            "np.column_stack",
+            "np.save"
+          ],
+          "output_keywords": [
+            "matched_genes"
+          ]
+        },
+        {
+          "position_1based": 84,
+          "execution_count": 91,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 85,
+          "execution_count": 92,
+          "source_keywords": [
+            "projection.npy"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 89,
+          "execution_count": 96,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 90,
+          "execution_count": 97,
+          "source_keywords": [
+            "projection.npy"
+          ],
+          "output_keywords": []
+        },
+        {
+          "position_1based": 91,
+          "execution_count": 98,
+          "source_keywords": [
+            "np.save"
+          ],
+          "output_keywords": []
+        }
+      ]
+    }
+  ]
+}

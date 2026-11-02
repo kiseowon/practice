@@ -1,0 +1,13 @@
+{
+  "source_file": "디퓨전 2차 시험 (2).ipynb",
+  "sha256": "b902809060906e43693e7f70f6d35ccf554c343fdad40f277dd3ffc6b05eb8db",
+  "cell_count": 120,
+  "execution_89_positions": [],
+  "execution_90_positions": [
+    83
+  ],
+  "weights_indices_occurrences": 0,
+  "len_matched_occurrences": 0,
+  "rest_kegg_occurrence": "only keyword list in position 118 / In[129]; no retrieval implementation",
+  "conclusion": "User supplied mapping description is not verified against In[89] source because that source is absent from this attachment. No requests or notebook execution performed."
+}

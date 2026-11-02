@@ -4,7 +4,7 @@
 
 ## 실행
 
-[추가 확인된 서버 원본](docs/server-source-update.md): [SMILES 매핑](notebooks/smiles_mapping_original.ipynb), [matched Morgan 생성](scripts/structure_features.py), [sparse 9조건 실행 기록](notebooks/sparse_pathway_server_record.ipynb)을 반영했습니다. KEGG 매핑 생성 전체는 아직 미확인입니다.
+[추가 확인된 서버 원본](docs/server-source-update.md): [SMILES 매핑](notebooks/smiles_mapping_original.ipynb), [matched Morgan 생성](scripts/structure_features.py), [sparse 9조건 실행 기록](notebooks/sparse_pathway_server_record.ipynb)을 반영했습니다. [KEGG In89·In90 원본을 복구](docs/kegg-original-recovered.md)했습니다. snapshot 재현 일치 검증은 미실행입니다.
 
 매핑부터 확인할 때는 [매핑 준비·연구 재시작 안내](docs/mapping-and-restart.md)를 보세요. [매핑 재구성 코드](scripts/reconstruct_mapping.py)는 원본과 구분해 추가했고, [In[77]부터의 실험 원본 보존본](notebooks/research_restart_original.ipynb)은 필요한 In[76] 정의부터 포함합니다. 원본 보존본에는 학습 호출이 있으므로 실행 승인 없이 Run All하지 마세요.
 

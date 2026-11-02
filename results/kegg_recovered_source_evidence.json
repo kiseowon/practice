@@ -1,0 +1,21 @@
+{
+  "files": [
+    {
+      "file": "scripts/original_server/In89_kegg_generation.py",
+      "sha256": "c7ba23e09fd1ca05c02950b079703f123389f8dc64abbf646dbd9fdb4b5f6fee"
+    },
+    {
+      "file": "scripts/original_server/In90_kegg_save_fix.py",
+      "sha256": "83c41c5640d0e6b5966cf74492d978243c07675ab1a812a15a444ed67084bb3f"
+    }
+  ],
+  "notebook_sha256": "178884baa782d327ee7688618c747a36658290ef366dcef11749f0b5b16733cb",
+  "checks": [
+    "Python files exactly equal recovered notebook In[89]/In[90] source",
+    "In[90] exactly equals previously preserved save-fix source",
+    "syntax parsed without execution"
+  ],
+  "source_restored": true,
+  "snapshot_reproduction_verified": false,
+  "external_requests_performed": false
+}
