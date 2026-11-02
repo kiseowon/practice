@@ -47,6 +47,8 @@ return F.silu(aggregated + self.bias)
 
 `PatternMLP.forward`는 발현 3453→128→64, Morgan+presence→64→32, pathway→32를 계산하고 실험 조건과 `torch.cat(..., dim=1)`로 이어 붙입니다. decoder는 결합 입력→64→3453을 예측합니다. 구조 유사도 그래프·타 약물 반응·사후 유전자 보정은 없습니다.
 
+발현·구조·pathway encoder는 별도 사전학습 없이 각 모델의 최종 학습 손실로 함께 end-to-end 학습합니다. KEGG 연결 위치는 고정이고 연결별 가중치는 학습합니다. 별도 pathway 정답이나 pathway loss는 없습니다. SMILES 매핑과 최종 Morgan 입력의 출처 및 미확인 사항은 [실험 상세](experimental-details.md)에 구분해 기록했습니다.
+
 ## 5. MLP / cGAN / DDPM 차이
 
 MLP는 weighted MSE로 target 발현을 직접 예측합니다.
@@ -78,4 +80,6 @@ predicted = predicted_treated - predicted_control
 
 ## 발표 문장
 
-“구조를 제공한 IVIVE 예측에서 pathway의 표현 방식을 비교했습니다. 고정 평균 대신 probe–pathway 소속 연결의 가중치를 학습하는 encoder가 MLP에서 절대 발현·반응 오차를 함께 줄였습니다. 연결 수를 보존한 무작위 대조군보다도 좋았으나, cGAN과 DDPM까지 일관된 개선은 아니었습니다.”
+“구조를 제공한 IVIVE 예측에서 pathway의 표현 방식을 비교했습니다. MLP의 실제 KEGG sparse가 이 분할과 단일 무작위 대조에서 절대 발현·반응 오차가 낮았습니다. 생성모델의 pathway 효과는 제한적이었습니다. 9조건 모두 구조 입력을 사용했으므로 구조 추가 효과를 보여주는 표는 아닙니다. 같은 테스트 결과를 보며 설계를 발전시킨 탐색 결과이며 완전히 독립적인 테스트는 아닙니다.”
+
+여러 분할·여러 무작위 mask·화합물 bootstrap CI·훈련 평균 반응 기준선은 아직 실행하지 않은 후속 계획입니다. 자세한 [해석의 한계](experimental-details.md)를 함께 참고하세요.

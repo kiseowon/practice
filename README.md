@@ -30,11 +30,15 @@ jupyter lab
 
 [실제 코드 해설](docs/code-walkthrough.md)을 먼저 보세요. `scripts/first_structure_mlp.py`는 전처리·분할·평가 공통 코드, `pathway_structure_mlp.py`는 기존 snapshot 로더와 평균 표현, `pathway_pattern_mlp.py`는 sparse encoder, `pathway_random_control.py`는 연결 대조군, `sparse_pathway_information_matrix.py`는 생성모델 학습입니다.
 
+[실험 상세·SMILES 매핑·해석의 한계](docs/experimental-details.md)에는 사용자가 확인한 서버 매핑 절차, Morgan 생성 코드와 최종 입력의 미확인 연결, end-to-end 학습 방식 및 미실행 후속 계획을 정리했습니다. 최종 `morgan_binary.csv`의 radius 2 설정은 검증되지 않았습니다.
+
 ## 현재 결과와 범위
 
 [9조건 결과](results/meeting_comparison.csv)는 사용자가 서버 출력으로 제공한 소수점 여섯 자리 요약입니다. 이 환경에서 실제 데이터로 다시 계산하지 않았습니다. [출처](results/provenance.json).
 
 모든 조건에 구조를 제공했습니다. 실제 KEGG sparse MLP가 절대 RMSE 0.333559, 반응 RMSE 0.309485로 가장 좋았습니다. 변화 없음 반응 RMSE는 0.330116입니다. DDPM에서는 반응만 소폭 개선됐고 cGAN은 pathway 없음보다 개선되지 않았습니다. 한 seed·반복 관찰한 28개 테스트 화합물 결과이며 유의성이나 독립 검증을 주장하지 않습니다.
+
+이는 단일 분할과 무작위 mask 1개의 탐색 결과입니다. MLP의 실제 KEGG는 이 분할과 단일 무작위 대조에서 오차가 낮았고, 생성모델의 pathway 효과는 제한적입니다. 9조건 모두 `structure=True`이므로 이 표만으로 구조 추가 효과를 주장할 수 없습니다. 검증으로 epoch를 골랐지만 같은 테스트 결과를 보며 다음 설계를 발전시켰으므로 완전히 독립적인 테스트는 아닙니다. 여러 분할·여러 무작위 mask·화합물 bootstrap CI·훈련 평균 반응 기준선은 아직 실행하지 않은 후속 계획입니다.
 
 이는 AIVIVE/P-NET 원문 모델 재현이 아닙니다. Sparse 연결 원리 참고: [P-NET, Nature 2021](https://doi.org/10.1038/s41586-021-03922-4). 예측은 probe 수준이며 모든 probe가 고유 유전자에 일대일 대응하는 것은 아닙니다.
 
