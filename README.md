@@ -4,6 +4,8 @@
 
 ## 실행
 
+[추가 확인된 서버 원본](docs/server-source-update.md): [SMILES 매핑](notebooks/smiles_mapping_original.ipynb), [matched Morgan 생성](scripts/structure_features.py), [sparse 9조건 실행 기록](notebooks/sparse_pathway_server_record.ipynb)을 반영했습니다. KEGG 매핑 생성 전체는 아직 미확인입니다.
+
 매핑부터 확인할 때는 [매핑 준비·연구 재시작 안내](docs/mapping-and-restart.md)를 보세요. [매핑 재구성 코드](scripts/reconstruct_mapping.py)는 원본과 구분해 추가했고, [In[77]부터의 실험 원본 보존본](notebooks/research_restart_original.ipynb)은 필요한 In[76] 정의부터 포함합니다. 원본 보존본에는 학습 호출이 있으므로 실행 승인 없이 Run All하지 마세요.
 
 미팅용 단계별 코드는 첨부 `연구미팅 1차 재현.ipynb`를 그대로 보존한 [연구미팅 재현 노트북](notebooks/research_meeting_reproduction.ipynb)입니다. 서버 데이터·기존 결과·무작위 mask가 필요하며, 함수 정의와 미학습 검증 예측을 포함합니다. 아래 기존 학습 노트북들과 용도를 구분하세요. 이번 갱신에서 추가 학습은 실행하지 않았습니다.
@@ -36,7 +38,7 @@ jupyter lab
 
 [실제 코드 해설](docs/code-walkthrough.md)을 먼저 보세요. `scripts/first_structure_mlp.py`는 전처리·분할·평가 공통 코드, `pathway_structure_mlp.py`는 기존 snapshot 로더와 평균 표현, `pathway_pattern_mlp.py`는 sparse encoder, `pathway_random_control.py`는 연결 대조군, `sparse_pathway_information_matrix.py`는 생성모델 학습입니다.
 
-[실험 상세·SMILES 매핑·해석의 한계](docs/experimental-details.md)에는 사용자가 확인한 서버 매핑 절차, Morgan 생성 코드와 최종 입력의 미확인 연결, end-to-end 학습 방식 및 미실행 후속 계획을 정리했습니다. 최종 `morgan_binary.csv`의 radius 2 설정은 검증되지 않았습니다.
+[실험 상세·SMILES 매핑·해석의 한계](docs/experimental-details.md)에는 사용자가 확인한 서버 매핑 절차, Morgan 생성 코드와 최종 입력의 미확인 연결, end-to-end 학습 방식 및 미실행 후속 계획을 정리했습니다. 추가 첨부의 matched config에는 radius 2가 기록되어 있으며, CSV checksum 및 독립 재생성 검증은 없습니다.
 
 ## 현재 결과와 범위
 

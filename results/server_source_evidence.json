@@ -1,0 +1,18 @@
+{
+  "source_file": "디퓨전 2차 시험 (1).ipynb",
+  "source_sha256": "eba15d2c2afd973af75b7c4cd3896ba49b9886c0a966f73469cb543186c1b7bc",
+  "extraction": "saved notebook source and stream outputs; no execution",
+  "files": {
+    "notebooks/smiles_mapping_original.ipynb": "position 107, embedded Untitled code indexes 27-29",
+    "scripts/original_server/make_structure_features.py": "position 107 stream output",
+    "scripts/structure_features.py": "position 113 stream output",
+    "results/morgan_matched_config.observed.json": "position 114 stream output",
+    "notebooks/sparse_pathway_server_record.ipynb": "positions 98-105 source and outputs"
+  },
+  "limitations": [
+    "compounds_137 construction absent",
+    "KEGG mapping construction still absent",
+    "input/feature checksums absent",
+    "saved config is evidence of recorded settings, not independent regeneration validation"
+  ]
+}

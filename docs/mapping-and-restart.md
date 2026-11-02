@@ -1,5 +1,7 @@
 # 매핑부터 연구 재시작 코드까지
 
+> 추가 첨부의 원본 코드·설정 기록을 반영한 최신 설명은 [서버 원본 추가 확인](server-source-update.md)을 보세요. 기존 미확인 사항 중 수동 CID·SMILES와 matched Morgan의 저장 설정은 새 근거로 확인되었습니다.
+
 ## 추가한 파일과 원본 여부
 
 - [재시작 원본 보존 노트북](../notebooks/research_restart_original.ipynb): 첨부 `디퓨전 2차 시험.ipynb`의 70번째 정의 셀(In[76])부터 94번째 결과(In[101])까지 코드와 출력을 변경 없이 보존합니다. In[77] 재시작 MLP, encoder 변경, pathway 없는 6조건, 평균 pathway MLP 4조건, 평균 pathway 12조건이 들어 있습니다. 이후 sparse 9조건과 구분합니다.

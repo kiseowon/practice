@@ -1,5 +1,7 @@
 # 미팅용 코드와 실제 시험 결과의 출처
 
+> 추가 첨부의 원본 코드·설정 기록을 반영한 최신 설명은 [서버 원본 추가 확인](server-source-update.md)을 보세요. 기존 미확인 사항 중 수동 CID·SMILES와 matched Morgan의 저장 설정은 새 근거로 확인되었습니다.
+
 사용자가 지정한 `연구미팅 1차 재현.ipynb`는 [미팅용 노트북](../notebooks/research_meeting_reproduction.ipynb)으로 파일 내용을 그대로 복사했습니다. `디퓨전 2차 시험.ipynb`의 탐색·시험 코드는 GitHub에 추가하지 않았습니다. 기존 scripts·노트북·9조건 결과는 보존했습니다. 추가 학습·재평가는 실행하지 않았습니다.
 
 ## 미팅 노트북이 보여주는 내용

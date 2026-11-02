@@ -19,5 +19,12 @@
     "cell_index": 15,
     "evidence": "Saved response RMSE table matches all nine rows; not a new training run"
   },
-  "user_confirmation": "User confirmed the nine structure-on sparse conditions are a separate completed server experiment; the 12-condition mean-pathway trial is an earlier experiment. Original server comparison.csv was not attached in this update."
+  "user_confirmation": "User confirmed the nine structure-on sparse conditions are a separate completed server experiment; the 12-condition mean-pathway trial is an earlier experiment. Original server comparison.csv was not attached in this update.",
+  "attached_server_evidence": {
+    "file": "notebooks/sparse_pathway_server_record.ipynb",
+    "source_file": "디퓨전 2차 시험 (1).ipynb",
+    "source_cell_index": 104,
+    "evidence": "Saved nine-row output matches absolute_rmse, response_rmse and selected_epoch; no recomputation from raw predictions"
+  },
+  "structure_config_evidence": "results/morgan_matched_config.observed.json"
 }

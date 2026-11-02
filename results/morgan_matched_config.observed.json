@@ -1,0 +1,9 @@
+{
+  "radius": 2,
+  "size": 2048,
+  "chirality": false,
+  "count_simulation": false,
+  "rdkit_version": "2026.03.6",
+  "smiles_source": "/home/seowon1211/data1/compound_pubchem_smiles.csv",
+  "note": "binary는 같은 folded count fingerprint의 양수 여부입니다. 기존 구조 파일과 별도의 기준선입니다."
+}

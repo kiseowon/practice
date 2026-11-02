@@ -1,5 +1,7 @@
 # IVIVE 실험 상세·구조 입력의 출처·해석의 한계
 
+> 추가 첨부의 원본 코드·설정 기록을 반영한 최신 설명은 [서버 원본 추가 확인](server-source-update.md)을 보세요. 기존 미확인 사항 중 수동 CID·SMILES와 matched Morgan의 저장 설정은 새 근거로 확인되었습니다.
+
 ## 대상과 기록의 범위
 
 Rat liver의 in vitro 발현으로 in vivo 발현을 예측합니다. 사용자가 확인한 데이터 규모는 140개 화합물, 3453개 probe이며, 조건 평균 데이터는 vitro 1675행 / vivo 2224행입니다. 개별 replicate의 분포를 직접 학습하는 실험은 아닙니다. seed 42의 화합물 분할은 내부 학습 89 / 검증 23 / 테스트 28개입니다.
@@ -13,10 +15,10 @@ Rat liver의 in vitro 발현으로 in vivo 발현을 예측합니다. 사용자�
 1. `pubchempy.get_compounds(name, "name")`으로 화합물 이름을 검색합니다.
 2. 검색 결과의 첫 번째 compound를 선택합니다.
 3. 입력 이름, CID, `c.connectivity_smiles`, status를 `compound_pubchem_smiles.csv`에 저장합니다.
-4. 예외 발생 시 최대 3회 재시도합니다.
+4. 추가 첨부에서 확인한 원본 구현은 `range(3)`으로 최대 3번 시도합니다.
 5. `acetamidofluorene`, `naphthyl isothiocyanate`는 CID와 SMILES를 수동 입력하고 `OK_MANUAL`로 기록합니다.
 
-첫 검색 결과가 실험에 사용된 물질과 동일한지 검증하는 자동 단계는 확인되지 않았습니다. 이름의 모호성, 이성질체·염 형태 등으로 잘못된 구조가 연결될 가능성이 있으므로, 첫 검색 결과나 `OK_MANUAL` 표기만으로 물질 동일성이 검증됐다고 볼 수 없습니다. 수동 입력한 CID·SMILES의 구체적인 값과 검증 근거는 이 문서에서 확인하지 못했습니다.
+첫 검색 결과가 실험에 사용된 물질과 동일한지 검증하는 자동 단계는 확인되지 않았습니다. 이름의 모호성, 이성질체·염 형태 등으로 잘못된 구조가 연결될 가능성이 있으므로, 첫 검색 결과나 `OK_MANUAL` 표기만으로 물질 동일성이 검증됐다고 볼 수 없습니다. 수동 입력한 CID·SMILES의 구체적인 값은 [추가 확인 문서](server-source-update.md)에 기록했습니다. 물질 동일성의 별도 검증 근거는 확인하지 못했습니다.
 
 위 내용은 원본에 대한 확인 기록을 설명한 것이며 실행 가능한 매핑 코드를 재구성해 제공하지 않습니다. 추후 코드를 재구성한다면 원본 그대로가 아닌 **재구성본**임을 표시해야 합니다.
 
@@ -29,9 +31,9 @@ Rat liver의 in vitro 발현으로 in vivo 발현을 예측합니다. 사용자�
 - `AllChem.GetMorganFingerprintAsBitVect(m, 2, 2048)`로 fingerprint를 생성합니다.
 - 파싱 실패 값은 열별 중앙값으로 채우고 상수 열을 제거하여 `struct_feats/struct_morgan2048.csv`에 저장합니다. 상수 열 제거로 출력 비트 수가 2048보다 줄어들 수 있습니다.
 
-이 스크립트에서 확인된 설정은 radius 2, 생성 시 2048비트입니다. 그러나 **이 스크립트의 생성 과정이 최종 학습 파일의 생성 과정과 같은지는 미확인**입니다. 최종 학습 입력은 `conditioned_expression/morgan_matched/morgan_binary.csv`이며, 사용자가 확인한 크기는 `compound` 포함 2049열입니다. 최종 노트북의 구조 입력 경로도 이 파일을 가리킵니다. 열 수와 파일명만으로 생성 이력을 입증할 수 없으므로 **radius 2를 최종 파일의 검증된 설정으로 단정하지 않습니다**.
+이 스크립트에서 확인된 설정은 radius 2, 생성 시 2048비트입니다. 그러나 **이 스크립트의 생성 과정이 최종 학습 파일의 생성 과정과 같은지는 미확인**입니다. 최종 학습 입력은 `conditioned_expression/morgan_matched/morgan_binary.csv`이며, 사용자가 확인한 크기는 `compound` 포함 2049열입니다. 최종 노트북의 구조 입력 경로도 이 파일을 가리킵니다. 추가 첨부의 `morgan_matched/config.json` 저장 출력에는 **radius 2, size 2048, chirality false, RDKit 2026.03.6**이 기록되어 있습니다. 이는 최종 경로의 설정 기록 확인이며 CSV checksum이나 독립 재생성 검증은 아닙니다.
 
-최종 CSV까지의 변환·매칭 과정, 사용한 RDKit 버전, 입력 파일 checksum은 미확인입니다. 중간 생성 스크립트의 중앙값 보간을 최종 입력에도 적용했다고 단정할 수 없습니다. 현재 학습 로더는 구조 입력의 유한한 이진 값(0/1)과 이름 중복을 검사하고, 화합물 이름으로 매칭한 뒤 누락 구조를 0과 presence flag로 처리합니다. 이 검사 자체가 PubChem 물질 동일성이나 fingerprint 생성 설정을 검증하지는 않습니다.
+추가 첨부에서 matched용 `structure_features.py`와 RDKit 버전 기록을 확인했습니다. 최종 CSV까지의 전체 변환·실행 이력과 입력 파일 checksum은 여전히 미확인입니다. 중간 생성 스크립트의 중앙값 보간을 최종 입력에도 적용했다고 단정할 수 없습니다. 현재 학습 로더는 구조 입력의 유한한 이진 값(0/1)과 이름 중복을 검사하고, 화합물 이름으로 매칭한 뒤 누락 구조를 0과 presence flag로 처리합니다. 이 검사 자체가 PubChem 물질 동일성이나 fingerprint 생성 설정을 검증하지는 않습니다.
 
 ## 학습 방식
 
