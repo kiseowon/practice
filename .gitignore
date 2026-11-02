@@ -1,13 +1,10 @@
 __pycache__/
 .ipynb_checkpoints/
+.venv/
 data/
 outputs/
 *.npy
 *.npz
-*.csv
-*.csv.gz
-*.tsv
-*.zip
 *.pt
-*.h5
+*.joblib
 .env

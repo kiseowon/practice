@@ -1,0 +1,10 @@
+family,pathway_mode,absolute_rmse,response_rmse,selected_epoch,zero_response_rmse,structure
+MLP,none,0.337249,0.313829,10,0.330116,True
+MLP,sparse,0.333559,0.309485,10,0.330116,True
+MLP,random_sparse,0.33597,0.313035,10,0.330116,True
+cGAN,none,0.379863,0.332292,25,0.330116,True
+cGAN,sparse,0.388245,0.332922,25,0.330116,True
+cGAN,random_sparse,0.410567,0.333861,25,0.330116,True
+epsilon-DDPM,none,0.354855,0.330387,30,0.330116,True
+epsilon-DDPM,sparse,0.356288,0.328952,25,0.330116,True
+epsilon-DDPM,random_sparse,0.357838,0.331531,30,0.330116,True

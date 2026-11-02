@@ -1,0 +1,17 @@
+{
+  "source": "User-pasted Jupyter output, six-decimal rounded metrics; not recomputed from server files",
+  "run": "sparse_pathway_gan_ddpm_20261102_062000_f4c529",
+  "seed": 42,
+  "split_counts": [
+    89,
+    23,
+    28
+  ],
+  "scope": "Exploratory single split reused during development; not independent confirmatory evaluation",
+  "missing_structures": [
+    "LPS",
+    "TNFÉø",
+    "tunicamycin"
+  ],
+  "environment": "CPU code; lab environment package versions and exact input checksums not captured"
+}
