@@ -4,6 +4,8 @@
 
 ## 실행
 
+매핑부터 확인할 때는 [매핑 준비·연구 재시작 안내](docs/mapping-and-restart.md)를 보세요. [매핑 재구성 코드](scripts/reconstruct_mapping.py)는 원본과 구분해 추가했고, [In[77]부터의 실험 원본 보존본](notebooks/research_restart_original.ipynb)은 필요한 In[76] 정의부터 포함합니다. 원본 보존본에는 학습 호출이 있으므로 실행 승인 없이 Run All하지 마세요.
+
 미팅용 단계별 코드는 첨부 `연구미팅 1차 재현.ipynb`를 그대로 보존한 [연구미팅 재현 노트북](notebooks/research_meeting_reproduction.ipynb)입니다. 서버 데이터·기존 결과·무작위 mask가 필요하며, 함수 정의와 미학습 검증 예측을 포함합니다. 아래 기존 학습 노트북들과 용도를 구분하세요. 이번 갱신에서 추가 학습은 실행하지 않았습니다.
 
 실제 시험 첨부 `디퓨전 2차 시험.ipynb`의 마지막 완료 12조건 결과는 [별도 CSV](results/diffusion_second_trial_mean_pathway_comparison.csv)에 옮겼습니다. 이 표는 **구조 on/off × 평균 pathway on/off**이며 아래 최종 9조건 sparse 표와 다른 실험입니다. [첨부 파일 반영 기록](docs/meeting-notebook-source.md)에 출처와 차이를 정리했습니다.
