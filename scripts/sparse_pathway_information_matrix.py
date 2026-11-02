@@ -239,5 +239,3 @@ def run_matrix(a,families=('cgan','ddpm')):
                 save_json(folder/'metrics.json',metrics);progress['runs'][name]['status']='complete';save_json(progress_path,progress)
                 collect();print(f'{name}: TEST response RMSE={metrics["response_rmse"]:.5f}',flush=True)
     result=collect();print(result.to_string(index=False));print('Saved:',a.out,flush=True);return result
-
-
