@@ -1,0 +1,66 @@
+1/3: 조건 평균·기본 pair 재생성
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:29: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  chunk['key'] = key(chunk.BARCODE)
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:29: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  chunk['key'] = key(chunk.BARCODE)
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:29: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  chunk['key'] = key(chunk.BARCODE)
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:29: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  chunk['key'] = key(chunk.BARCODE)
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:37: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  d['compound'] = d.COMPOUND_NAME.str.strip()
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:38: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  d['dose'] = pd.to_numeric(d.dose_numeric_corrected, errors='raise')
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:39: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  d['unit'] = d.dose_unit_corrected.str.strip()
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:40: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  d['time_h'] = pd.to_numeric(d.SACRIFICE_PERIOD.str.extract(r'^(\d+(?:\.\d+)?)\s*hr$')[0], errors='raise')
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  d['level'] = d.DOSE_LEVEL.str.strip()
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:47: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  table = means.join(counts).reset_index()
+vitro 조건 수: 1675 probe 수: 3453
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:29: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  chunk['key'] = key(chunk.BARCODE)
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:29: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  chunk['key'] = key(chunk.BARCODE)
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:29: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  chunk['key'] = key(chunk.BARCODE)
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:29: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  chunk['key'] = key(chunk.BARCODE)
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:29: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  chunk['key'] = key(chunk.BARCODE)
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:29: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  chunk['key'] = key(chunk.BARCODE)
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:29: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  chunk['key'] = key(chunk.BARCODE)
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:37: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  d['compound'] = d.COMPOUND_NAME.str.strip()
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:38: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  d['dose'] = pd.to_numeric(d.dose_numeric_corrected, errors='raise')
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:39: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  d['unit'] = d.dose_unit_corrected.str.strip()
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:40: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  d['time_h'] = pd.to_numeric(d.SACRIFICE_PERIOD.str.extract(r'^(\d+(?:\.\d+)?)\s*hr$')[0], errors='raise')
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:41: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  d['level'] = d.DOSE_LEVEL.str.strip()
+/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/conditioned_ivive.py:47: PerformanceWarning: DataFrame is highly fragmented.  This is usually the result of calling `frame.insert` many times, which has poor performance.  Consider joining all columns at once using pd.concat(axis=1) instead. To get a de-fragmented frame, use `newframe = frame.copy()`
+  table = means.join(counts).reset_index()
+vivo 조건 수: 2224 probe 수: 3453
+입력–목표 조합: 14916 화합물: 140
+2/3: 대조군 포함 pair 재생성
+화합물: 140 조합: 19936 대조군 목표: 560
+원본 폴더는 수정하지 않았습니다. 저장: /home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/prepared_controls
+3/3: 기존 준비 데이터와 비교
+file	original_shape	recreated_shape	exact_match	within_tolerance	detail	max_absolute_difference
+0	probes.csv	(3453, 1)	(3453, 1)	True	True		NaN
+1	vitro_conditions.csv	(1675, 7)	(1675, 7)	True	True		NaN
+2	vivo_conditions.csv	(2224, 7)	(2224, 7)	True	True		NaN
+3	pairs.csv.gz	(19936, 14)	(19936, 14)	True	True		NaN
+4	vitro_expression.npy	(1675, 3453)	(1675, 3453)	True	True	dtype: float32 / float32	0.0
+5	vivo_expression.npy	(2224, 3453)	(2224, 3453)	True	True	dtype: float32 / float32	0.0
+모든 파일 정확히 일치: True
+모든 파일 허용오차 내 일치: True
+검사 폴더: /home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c
+
+Click to add a cell.

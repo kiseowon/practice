@@ -1,0 +1,11 @@
+{
+  "original": "/home/seowon1211/data1/conditioned_expression/prepared_controls",
+  "recreated": "/home/seowon1211/data1/conditioned_expression/prepared_reproduction_20261102_131008_48e55c/prepared_controls",
+  "code_sha256": {
+    "conditioned_ivive.py": "87a306c090eb1d0fee82f0602e70e21a73bfef9561b98b30e84c691ef890500a",
+    "prepare_control_targets.py": "0830d532787d74a32aea37a98cdfd96fb38f3bb9f1d2ce1bfb95f22bd73c3bb6"
+  },
+  "numpy_version": "2.4.6",
+  "pandas_version": "3.0.6",
+  "scope": "현재 원시 발현·corrected 메타데이터와 현재 코드로 prepared_controls 생성 결과를 비교. 메타데이터 보정 자체와 모델 학습은 검증하지 않음."
+}

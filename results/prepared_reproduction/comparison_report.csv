@@ -1,0 +1,7 @@
+file,original_shape,recreated_shape,exact_match,within_tolerance,detail,max_absolute_difference
+probes.csv,"(3453, 1)","(3453, 1)",True,True,,
+vitro_conditions.csv,"(1675, 7)","(1675, 7)",True,True,,
+vivo_conditions.csv,"(2224, 7)","(2224, 7)",True,True,,
+pairs.csv.gz,"(19936, 14)","(19936, 14)",True,True,,
+vitro_expression.npy,"(1675, 3453)","(1675, 3453)",True,True,dtype: float32 / float32,0.0
+vivo_expression.npy,"(2224, 3453)","(2224, 3453)",True,True,dtype: float32 / float32,0.0

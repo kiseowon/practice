@@ -1,0 +1,33 @@
+{
+  "method": "This environment read supplied report and hashed preserved source files; no preparation execution",
+  "reported_server_run": "prepared_reproduction_20261102_131008_48e55c",
+  "source_checks": [
+    {
+      "preserved_file": "scripts/original_server/conditioned_ivive.py",
+      "reported_sha256": "87a306c090eb1d0fee82f0602e70e21a73bfef9561b98b30e84c691ef890500a",
+      "actual_sha256": "87a306c090eb1d0fee82f0602e70e21a73bfef9561b98b30e84c691ef890500a",
+      "match": true
+    },
+    {
+      "preserved_file": "scripts/original_server/prepare_control_targets.py",
+      "reported_sha256": "0830d532787d74a32aea37a98cdfd96fb38f3bb9f1d2ce1bfb95f22bd73c3bb6",
+      "actual_sha256": "0830d532787d74a32aea37a98cdfd96fb38f3bb9f1d2ce1bfb95f22bd73c3bb6",
+      "match": true
+    }
+  ],
+  "attachments": [
+    {
+      "file": "comparison_report.csv",
+      "sha256": "af79907c99a452b56b1fa3326718c167d3fde2524ba77e749a42f6098ed31bb4"
+    },
+    {
+      "file": "verification_scope.json",
+      "sha256": "4f76d2761b3871536bd868ea314f9004ae2c1a93fa9be3105dc87edff1ce9816"
+    },
+    {
+      "file": "server_output.txt",
+      "sha256": "72e09fb6809a68a80f6ba86dfad2487a887e944bbaedab6d469c68c85511022e"
+    }
+  ],
+  "independent_prepared_regeneration_here": false
+}

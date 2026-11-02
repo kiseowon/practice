@@ -1,5 +1,7 @@
 # 메타데이터 보정 실행 기록과 137개 화합물 선정 앞단
 
+> 최신 범위: 후속 사용자 서버 보고서에서 준비6파일 재현이 정확히 일치했습니다. 메타데이터 보정 자체와 모델 학습은 검증 범위 밖입니다. [최신 검증 상태](verification-status.md)를 참고하세요. 아래는 원본 조사 당시의 근거·미확인 사항도 포함합니다.
+
 ## 원본 보존과 확인 범위
 
 [세션4 실행 이력](../notebooks/metadata_session4_history.ipynb), [Untitled 앞 26셀](../notebooks/Untitled_first26_original.ipynb)을 첨부 바이트 그대로 보존했습니다. [SHA-256·확인 상태](../results/metadata_history_source_evidence.json)를 기록했습니다. 노트북 코드·설치·학습·다운로드·전처리는 실행하지 않았습니다. 실행 기록의 코드 확보, 현재 CSV의 생성본 식별, 실제 준비 데이터 재현은 서로 다른 확인 항목입니다.

@@ -28,5 +28,7 @@
   },
   "structure_config_evidence": "results/morgan_matched_config.observed.json",
   "server_aggregate_csv": "results/server_sparse_comparison.csv",
-  "verification_status_document": "docs/verification-status.md"
+  "verification_status_document": "docs/verification-status.md",
+  "prepared_reproduction_report": "results/prepared_reproduction/comparison_report.csv",
+  "prepared_reproduction_scope": "User-server regeneration from current raw expression and corrected metadata; six files exact, NPY max difference 0; excludes metadata correction and model training"
 }

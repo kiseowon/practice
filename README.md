@@ -1,55 +1,54 @@
-# IVIVE: structure and sparse pathway inputs
+# IVIVE: 구조·생물학적 관계를 학습에 반영하기
 
-첫 연구미팅용 코드. 조건별 in vitro 발현과 약물 구조·실험 조건으로 in vivo 발현을 예측하고, KEGG pathway 표현의 효과를 MLP / cGAN / epsilon-DDPM에서 비교합니다.
+**연구 질문: 구조·pathway 정보가 미관측 화합물의 IVIVE 예측에 도움이 되는가?** Rat liver의 조건 평균 in vitro 발현으로 in vivo 발현을 예측합니다. 생물학적 정보를 예측 후 보정하는 대신 처음부터 모델 학습에 반영할 수 있는지 탐색합니다. 현재 encoder는 별도 사전학습 없이 최종 목적함수로 함께 end-to-end 학습합니다.
 
-## 실행
+AIVIVE는 in vitro→in vivo 변환과 생물학적 신호 보완이라는 문제 설정의 출발점입니다. GEARS는 생물학적 관계를 모델에 활용하는 아이디어의 영감이며, 현재 구현이 GEARS의 그래프나 유전자 교란 예측 모델을 구현한 것은 아닙니다. **AIVIVE·GEARS를 그대로 재현한 연구가 아닙니다.** RAID는 구조 정보와 in vitro 발현을 이용한 예측의 선행연구이고, sparse 연결 구현은 P-NET 원리를 참고했습니다. 현재 KEGG 소속 행렬은 완성된 지식 그래프 기반 diffusion이나 별도 pretraining의 검증을 뜻하지 않습니다.
 
-[현재 연구 상태](docs/research-state.md) · [원본 확보·검증 상태](docs/verification-status.md) · [메타데이터 보정·137개 선정 이력](docs/metadata-and-compound-history.md)
+## 실험 발전과 현재 최종 비교
 
-[추가 확인된 서버 원본](docs/server-source-update.md): [SMILES 매핑](notebooks/smiles_mapping_original.ipynb), [matched Morgan 생성](scripts/structure_features.py), [sparse 9조건 실행 기록](notebooks/sparse_pathway_server_record.ipynb)을 반영했습니다. [KEGG In89·In90 원본을 복구](docs/kegg-original-recovered.md)했습니다. 후속 첨부의 저장 KEGG 원문·annotation으로 snapshot의 321개 열과 audit가 정확히 일치함을 이 환경에서 확인했습니다. Morgan은 사용자 서버에서 저장 SMILES·config와 동일 RDKit 버전으로 재계산해 137개 binary 전부 일치했습니다. 이 작업 환경의 독립 재검증은 아닙니다.
+과거 24h·109 probe 탐색 → 조건 평균·3453 probe 연구 재시작 → pathway 없는 모델 비교 → **평균 pathway 12조건 → sparse pathway 9조건**으로 진행했습니다. 자세한 [연구 상태](docs/research-state.md)와 [원본·자료 이력](docs/metadata-and-compound-history.md)을 참고하세요.
 
-매핑부터 확인할 때는 [매핑 준비·연구 재시작 안내](docs/mapping-and-restart.md)를 보세요. [매핑 재구성 코드](scripts/reconstruct_mapping.py)는 원본과 구분해 추가했고, [In[77]부터의 실험 원본 보존본](notebooks/research_restart_original.ipynb)은 필요한 In[76] 정의부터 포함합니다. 원본 보존본에는 학습 호출이 있으므로 실행 승인 없이 Run All하지 마세요.
+| 단계 | 비교 범위 | 결과 |
+| --- | --- | --- |
+| 평균 pathway | MLP·cGAN·epsilon-DDPM × 구조 off/on × 평균 pathway off/on, 12조건 | [별도 결과 CSV](results/diffusion_second_trial_mean_pathway_comparison.csv) |
+| 최종 sparse pathway | MLP·cGAN·epsilon-DDPM × pathway 없음/실제 KEGG sparse/무작위 sparse, 9조건. 구조는 모두 켬 | [6자리 요약](results/meeting_comparison.csv) · [서버 집계 CSV](results/server_sparse_comparison.csv) |
 
-미팅용 단계별 코드는 첨부 `연구미팅 1차 재현.ipynb`를 그대로 보존한 [연구미팅 재현 노트북](notebooks/research_meeting_reproduction.ipynb)입니다. 서버 데이터·기존 결과·무작위 mask가 필요하며, 함수 정의와 미학습 검증 예측을 포함합니다. 아래 기존 학습 노트북들과 용도를 구분하세요. 이번 갱신에서 추가 학습은 실행하지 않았습니다.
+seed42 화합물 분할은 내부 학습89 / 검증23 / 테스트28입니다. 발현 3453 probe, vitro 1675·vivo 2224조건, pair 19,936개입니다. 검증으로 epoch를 고르고 112개 화합물로 다시 학습한 뒤 테스트를 평가하는 코드입니다. 이 표는 조건 평균의 예측 오차이며 생성 분포 품질 평가는 아닙니다.
 
-실제 시험 첨부 `디퓨전 2차 시험.ipynb`의 마지막 완료 12조건 결과는 [별도 CSV](results/diffusion_second_trial_mean_pathway_comparison.csv)에 옮겼습니다. 이 표는 **구조 on/off × 평균 pathway on/off**이며 아래 최종 9조건 sparse 표와 다른 실험입니다. [첨부 파일 반영 기록](docs/meeting-notebook-source.md)에 출처와 차이를 정리했습니다.
+| 모델 | pathway | 절대 RMSE ↓ | 반응 RMSE ↓ |
+| --- | --- | ---: | ---: |
+| MLP | 없음 | 0.337249 | 0.313829 |
+| MLP | 실제 sparse | 0.333559 | 0.309485 |
+| MLP | 무작위 sparse | 0.335970 | 0.313035 |
+| cGAN | 없음 | 0.379863 | 0.332292 |
+| cGAN | 실제 sparse | 0.388245 | 0.332922 |
+| cGAN | 무작위 sparse | 0.410567 | 0.333861 |
+| epsilon-DDPM | 없음 | 0.354855 | 0.330387 |
+| epsilon-DDPM | 실제 sparse | 0.356288 | 0.328952 |
+| epsilon-DDPM | 무작위 sparse | 0.357838 | 0.331531 |
 
-```bash
-python -m pip install -r requirements.txt
-jupyter lab
-```
+이 분할과 단일 무작위 대조에서 실제 KEGG sparse MLP가 두 오차 모두 가장 낮았습니다. **DDPM에서도 실제 KEGG가 반응 RMSE를 소폭 낮췄고 무작위 연결보다 낮았습니다.** 다만 절대 오차는 pathway 없음보다 높았으며 cGAN에서는 개선되지 않았습니다. 변화 없음 반응 기준선은 0.330116입니다. 모든 9조건이 structure=True이므로 이 표만으로 구조 추가 효과를 주장하지 않습니다.
 
-독립형 노트북은 저장소 scripts를 import하지 않아 서버에 노트북만 올려도 실행됩니다. 새 커널에서 Run All 하세요. 기본 실행은 CPU입니다.
+단일 분할·단일 mask·테스트28개이며 같은 테스트 결과를 보며 설계를 발전시킨 탐색 실험입니다. 독립적인 확증 검증이나 유의성을 주장하지 않습니다. 반복 분할·여러 mask·화합물 bootstrap CI·훈련 평균 반응 기준선은 미실행 후속 계획이고, 추가 학습·실험은 현재 승인되지 않았습니다.
 
-1. `notebooks/pathway_pattern_mlp.ipynb`: 구조 입력 고정, pathway 없음 / 평균 / 실제 sparse MLP.
-2. `notebooks/pathway_random_control.ipynb`: 기존 세 결과를 읽고 무작위 sparse MLP 하나만 추가.
-3. `notebooks/sparse_pathway_gan_ddpm.ipynb`: MLP 결과 재사용, cGAN·DDPM × 없음/실제/무작위 6개 학습. 같은 OUT으로 재개하면 완료 모델은 건너뜁니다.
+## 파일 선택과 실행
 
-각 노트북 마지막 셀의 데이터·이전 결과 경로를 수정하세요. 노트북에는 당시 실제 서버 경로가 기본값으로 들어 있습니다. 실험 중인 서버 파일은 GitHub 정리와 별개입니다.
+[실행 안내](docs/execution-guide.md)에서 **최종 실행용 / 공부·미팅용 / 원본 보존용 / 재구성본**을 구분하고 입력·순서·출력을 확인하세요. 원본 보존 노트북에는 과거 학습·설치·외부 요청이 있으므로 일괄 Run All하지 않습니다. 기존 파일 경로는 유지했습니다.
 
-## 필요한 로컬 데이터
+최종 학습 경로는 pathway_pattern_mlp → pathway_random_control → sparse_pathway_gan_ddpm 노트북 순서입니다. prepared_controls 6파일, Morgan binary, 기존 KEGG snapshot, 단계별 참조 산출물이 필요합니다. 서버 절대경로를 사용하므로 새 환경에서는 각 실행 셀의 경로를 명시적으로 설정해야 합니다. 준비된 입력과 원시 발현·snapshot·체크포인트 전체는 공개 저장소에 없습니다.
 
-- prepared_controls: `vitro_expression.npy`, `vivo_expression.npy`, `vitro_conditions.csv`, `vivo_conditions.csv`, `pairs.csv.gz`, `probes.csv`.
-- Morgan binary CSV: `compound`와 2048 fingerprint 컬럼. 누락 구조는 0과 presence flag로 처리.
-- KEGG Rat snapshot: `projection.npy`, `pathway_audit.csv`, `provenance.json`. 기존 생성 snapshot을 사용합니다. 소속은 고정 외부 지식이며 probe 순서와 Rat 종을 검사합니다.
-- 재사용 비교에는 이전 노트북의 comparison / config / compound_split / predictions 파일이 필요합니다.
+requirements.txt는 의존성 범위이며 당시 서버 환경 lockfile이 아닙니다. 현재 클라우드에 설치된 버전을 과거 실험 버전으로 간주하지 않습니다.
 
-원자료·annotation snapshot·체크포인트는 GitHub에 포함하지 않습니다. 따라서 새 환경에서 원자료 없이 실제 연구 결과를 재현할 수는 없습니다. 패키지 버전은 범위이며 당시 서버 환경의 lockfile은 확보하지 못했습니다.
+## 검증 상태
 
-## 읽는 순서
+[수행 환경·근거별 검증 상태](docs/verification-status.md)에 원본 확보와 산출물 검증을 구분했습니다.
 
-[실제 코드 해설](docs/code-walkthrough.md)을 먼저 보세요. `scripts/first_structure_mlp.py`는 전처리·분할·평가 공통 코드, `pathway_structure_mlp.py`는 기존 snapshot 로더와 평균 표현, `pathway_pattern_mlp.py`는 sparse encoder, `pathway_random_control.py`는 연결 대조군, `sparse_pathway_information_matrix.py`는 생성모델 학습입니다.
+- 사용자 서버: 원시 발현·현재 corrected 메타데이터로 준비 6파일 재생성, 전부 정확히 일치. NPY 최대 차이 0. 사용 코드 hash는 보존 원본과 일치.
+- 사용자 서버: Morgan binary 137개 일치, 무작위 mask degree 보존·겹침률 검사 통과, 저장 예측의 9조건 지표 모두 일치 보고. 추가 모델 학습·예측 재생성 검증과 구분.
+- 이 작업 환경: 첨부 파일 정합성과 KEGG 저장 원문·annotation·audit·projection의 정확한 일치 확인. 새 다운로드·원본 생성 코드 실행 없이 오프라인 메모리 대조.
 
-[실험 상세·SMILES 매핑·해석의 한계](docs/experimental-details.md)에는 사용자가 확인한 서버 매핑 절차, Morgan 생성 코드와 최종 입력의 미확인 연결, end-to-end 학습 방식 및 미실행 후속 계획을 정리했습니다. 추가 첨부의 matched config에는 radius 2가 기록되어 있으며, CSV checksum 및 독립 재생성 검증은 없습니다.
+전체 모델 재학습이나 새 환경의 end-to-end 재현을 완료한 것은 아닙니다. corrected 메타데이터의 생성 버전(In7/In10), reference 취득 출처, 당시 환경 전체, 과거 SVD64 생성 출처는 미확인입니다.
 
-## 현재 결과와 범위
+[코드 해설](docs/code-walkthrough.md) · [실험 상세](docs/experimental-details.md) · [KEGG 원본](docs/kegg-original-recovered.md) · [출처 기록](results/provenance.json)
 
-[9조건 결과](results/meeting_comparison.csv)는 사용자가 서버 출력으로 제공한 소수점 여섯 자리 요약입니다. 이 환경에서 실제 데이터로 다시 계산하지 않았습니다. [출처](results/provenance.json).
-
-모든 조건에 구조를 제공했습니다. 실제 KEGG sparse MLP가 절대 RMSE 0.333559, 반응 RMSE 0.309485로 가장 좋았습니다. 변화 없음 반응 RMSE는 0.330116입니다. DDPM에서는 반응만 소폭 개선됐고 cGAN은 pathway 없음보다 개선되지 않았습니다. 한 seed·반복 관찰한 28개 테스트 화합물 결과이며 유의성이나 독립 검증을 주장하지 않습니다.
-
-이는 단일 분할과 무작위 mask 1개의 탐색 결과입니다. MLP의 실제 KEGG는 이 분할과 단일 무작위 대조에서 오차가 낮았고, 생성모델의 pathway 효과는 제한적입니다. 9조건 모두 `structure=True`이므로 이 표만으로 구조 추가 효과를 주장할 수 없습니다. 검증으로 epoch를 골랐지만 같은 테스트 결과를 보며 다음 설계를 발전시켰으므로 완전히 독립적인 테스트는 아닙니다. 여러 분할·여러 무작위 mask·화합물 bootstrap CI·훈련 평균 반응 기준선은 아직 실행하지 않은 후속 계획입니다.
-
-이는 AIVIVE/P-NET 원문 모델 재현이 아닙니다. Sparse 연결 원리 참고: [P-NET, Nature 2021](https://doi.org/10.1038/s41586-021-03922-4). 예측은 probe 수준이며 모든 probe가 고유 유전자에 일대일 대응하는 것은 아닙니다.
-
-기존 main의 탐색 코드는 현재 파일 목록에서 제거했으며 Git 이력에 보존했습니다. 이전 보고 자동화는 `experiment-records` 브랜치에 남아 있습니다.
+현재 checkout은 과거 모든 실험의 완전한 보관소가 아닙니다. README의 이전 기록상 탐색 코드는 Git 이력에, 보고 자동화는 experiment-records 브랜치에 남아 있습니다. 해당 이력 전체를 감사한 것은 아닙니다.
