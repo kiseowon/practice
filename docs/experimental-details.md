@@ -35,7 +35,7 @@ Rat liver의 in vitro 발현으로 in vivo 발현을 예측합니다. 사용자�
 
 ## 학습 방식
 
-발현·구조·pathway encoder는 별도 사전학습 없이 각 모델의 최종 학습 목적함수로 함께 end-to-end 학습합니다. KEGG가 제공하는 probe–pathway 연결 위치는 고정하고 연결별 가중치는 학습합니다. 별도의 pathway 정답이나 pathway loss는 없습니다.
+발현·구조·pathway encoder는 별도 사전학습 없이 각 모델의 최종 학습 목적함수로 함께 end-to-end 학습합니다. Probe–gene 매핑과 KEGG의 gene–pathway 소속으로 구성한 probe–pathway 연결 위치는 고정하고 연결별 가중치는 학습합니다. 별도의 pathway 정답이나 pathway loss는 없습니다.
 
 MLP는 가중 발현 MSE, cGAN은 조건부 적대적 BCE, epsilon-DDPM은 noise 예측 MSE를 사용합니다. cGAN의 generator와 discriminator는 각각 자신의 context encoder를 학습하며 별도 발현 재구성 loss는 없습니다. 자세한 연산은 [코드 해설](code-walkthrough.md)을 참고하세요.
 
