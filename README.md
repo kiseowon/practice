@@ -58,3 +58,5 @@ requirements.txt는 의존성 범위이며 당시 서버 환경 lockfile이 아�
 [코드 해설](docs/code-walkthrough.md) · [실험 상세](docs/experimental-details.md) · [KEGG 원본](docs/kegg-original-recovered.md) · [출처 기록](results/provenance.json)
 
 현재 checkout은 과거 모든 실험의 완전한 보관소가 아닙니다. README의 이전 기록상 탐색 코드는 Git 이력에, 보고 자동화는 experiment-records 브랜치에 남아 있습니다. 해당 이력 전체를 감사한 것은 아닙니다.
+
+[조건 평균 반응 예측용 새 학습 프로토콜](docs/response-focused-training.md): 학습 target 공통 척도 조정과 검증 반응 RMSE에 따른 학습률·epoch 선택을 별도 실행기로 추가했습니다. 기본은 MLP 계획 출력이며 실제 연구 학습은 이 작업에서 실행하지 않았습니다.
