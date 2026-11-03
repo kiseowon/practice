@@ -21,9 +21,50 @@ class RepeatedValidationTests(unittest.TestCase):
                 with contextlib.redirect_stdout(io.StringIO()):
                     planned = repeat.main(['--prepared', '/missing/prepared', '--structure', '/missing/s.csv',
                                            '--annotation', '/missing/kegg', '--out', str(out)])
-            self.assertEqual(len(planned), 75)
+            self.assertEqual(len(planned), 25)
             self.assertFalse(out.exists())
-            self.assertEqual(len({tuple(j.items()) for j in planned}), 75)
+            self.assertEqual(len({tuple(j.items()) for j in planned}), 25)
+
+    def test_family_selection_and_baseline_only_plans(self):
+        flags = ['--prepared', '/p', '--structure', '/s', '--annotation', '/a', '--out', '/o']
+        with contextlib.redirect_stdout(io.StringIO()), patch.object(repeat, 'execute') as execute:
+            planned = repeat.main(flags + ['--families', 'mlp', 'cgan', 'ddpm'])
+            self.assertEqual(len(planned), 75)
+            planned = repeat.main(flags + ['--baseline-only'])
+            self.assertEqual(planned, [])
+            execute.assert_not_called()
+        self.assertEqual({j['family'] for j in repeat.jobs([42], [42], [1], ['cGAN'])}, {'cGAN'})
+
+    def test_training_mean_is_level_specific_and_compound_balanced(self):
+        from types import SimpleNamespace
+        # A has High responses 2 and 6; B has High 10. Compound-balanced
+        # High mean=(mean(2,6)+10)/2=7, not condition-weighted 6.
+        # Low means A=20,B=40 ->30. C is the held-out compound.
+        table = pd.DataFrame(dict(condition_id=range(10),
+            compound=['A']*4 + ['B']*3 + ['C']*3, unit=['u']*10,
+            time_h=[24]*10, level=['Control','High','High','Low',
+                                   'Control','High','Low','Control','High','Low']))
+        data = SimpleNamespace(vo=table, target_ids=np.array([0,1,1,1,2,3,4,5,6,7,8,9]),
+            target=np.array([[10.],[12.],[16.],[30.],[100.],[110.],[140.],[1000.],[1009.],[1032.]]))
+        tr, te = np.arange(9), np.array([9,10,11])
+        means, metrics, detail = repeat.training_mean_response(data,tr,te)
+        np.testing.assert_array_equal(means['High'], [7.])
+        np.testing.assert_array_equal(means['Low'], [30.])
+        self.assertEqual(metrics['n_training_treated'], 5)
+        self.assertEqual(metrics['training_counts_by_level']['High']['compounds'], 2)
+        self.assertEqual(metrics['training_mean_response_rmse'], 2.)
+        self.assertNotIn('absolute_rmse',metrics)
+        self.assertEqual(detail.level.tolist(), ['High','Low'])
+        data.target[8:] = 999999
+        changed, _, _ = repeat.training_mean_response(data,tr,te)
+        for level in means:np.testing.assert_array_equal(changed[level], means[level])
+        with self.assertRaisesRegex(ValueError, 'control absent'):
+            repeat.training_mean_response(data,np.arange(1,9),te)
+        with self.assertRaisesRegex(ValueError, 'compound overlap'):
+            repeat.training_mean_response(data,np.arange(12),te)
+        data.vo.loc[9,'level']='Unseen'
+        with self.assertRaisesRegex(ValueError, 'No training baseline'):
+            repeat.training_mean_response(data,tr,te)
 
     def test_baselines_not_duplicated_by_mask(self):
         planned = repeat.jobs([42], [10, 11], [1, 2, 3])
@@ -118,6 +159,36 @@ class RepeatedValidationTests(unittest.TestCase):
                 repeat.execute(args, [])
             self.assertEqual((output / 'existing.txt').read_text(), 'preserve me')
             self.assertFalse((output / 'run.json').exists())
+
+    def test_resume_rejects_family_seed_mask_input_and_source_change(self):
+        import json
+        import first_structure_mlp as first
+        with tempfile.TemporaryDirectory() as directory:
+            root=Path(directory)
+            prepared, annotation, output=(root/n for n in ['p','a','out'])
+            prepared.mkdir(); annotation.mkdir()
+            structure=root/'s.csv'; structure.write_text('fixture')
+            for name in ['vitro_expression.npy','vivo_expression.npy','vitro_conditions.csv',
+                         'vivo_conditions.csv','pairs.csv.gz','probes.csv']:
+                (prepared/name).write_text('fixture')
+            for name in ['projection.npy','pathway_audit.csv','provenance.json']:
+                (annotation/name).write_text('fixture')
+            args=repeat.parser().parse_args(['--prepared',str(prepared),'--structure',str(structure),
+                '--annotation',str(annotation),'--out',str(output),'--baseline-only'])
+            with patch.object(first,'Data',side_effect=RuntimeError('stop before data load')):
+                with self.assertRaisesRegex(RuntimeError,'before data load'):repeat.execute(args,[])
+                original=json.loads((output/'run.json').read_text())
+                for field,new_value in [('families',['ddpm']),('split_seeds',[99]),('graph_seeds',[88])]:
+                    old=getattr(args,field);setattr(args,field,new_value)
+                    with self.assertRaisesRegex(ValueError,'different configuration'):repeat.execute(args,[])
+                    setattr(args,field,old)
+                structure.write_text('changed')
+                with self.assertRaisesRegex(ValueError,'different configuration'):repeat.execute(args,[])
+                structure.write_text('fixture')
+                altered=dict(original);altered['hashes']=dict(original['hashes'])
+                altered['hashes'][str(Path(repeat.__file__).resolve())]='wrong source digest'
+                (output/'run.json').write_text(json.dumps(altered))
+                with self.assertRaisesRegex(ValueError,'different configuration'):repeat.execute(args,[])
 
     def test_duplicate_seeds_rejected_before_execute(self):
         with patch.object(repeat, 'execute', side_effect=AssertionError('called')):

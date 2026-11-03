@@ -13,11 +13,11 @@ import uuid
 FAMILIES = ('MLP', 'cGAN', 'epsilon-DDPM')
 
 
-def jobs(split_seeds, model_seeds, graph_seeds):
+def jobs(split_seeds, model_seeds, graph_seeds, families=FAMILIES):
     result = []
     for split in split_seeds:
         for model in model_seeds:
-            for family in FAMILIES:
+            for family in families:
                 for mode, graph in [('none', None), ('sparse', None)] + [
                         ('random_sparse', g) for g in graph_seeds]:
                     result.append(dict(split_seed=split, model_seed=model, family=family,
@@ -65,6 +65,69 @@ def summarize(table):
         [m + '_delta' for m in metrics]].agg(['count', 'mean', 'std'])
     summary.columns = ['_'.join(c) for c in summary.columns]
     return per_unit, paired, split_paired, summary.reset_index()
+
+
+def training_mean_response(data, train_rows, test_rows):
+    """Level-specific mean: unique targets -> per compound -> across compounds.
+
+    Training is outer-refit compounds (inner train + validation); no fitted
+    parameter uses test expression. Evaluation weights conditions/probes equally,
+    as the existing response RMSE does. No absolute-expression metric is defined.
+    """
+    import numpy as np
+    import pandas as pd
+    table = data.vo
+    train_ids = np.unique(data.target_ids[train_rows])
+    test_ids = np.unique(data.target_ids[test_rows])
+    if set(table.iloc[train_ids].compound) & set(table.iloc[test_ids].compound):
+        raise ValueError('Baseline train/test compound overlap')
+    controls = table.loc[table.level.eq('Control')]
+    keys = ['compound', 'unit', 'time_h']
+    if controls.duplicated(keys).any():
+        raise ValueError('Ambiguous baseline control')
+    lookup = controls.set_index(keys).condition_id.to_dict()
+
+    def responses(ids):
+        available = set(ids)
+        records, vectors = [], []
+        for cid in ids:
+            row = table.iloc[cid]
+            if row.level == 'Control':
+                continue
+            if pd.isna(row.level) or not str(row.level).strip():
+                raise ValueError('Missing target dose level')
+            control = lookup.get((row.compound, row.unit, row.time_h))
+            if control is None or control not in available:
+                raise ValueError('Matched control absent from selected targets')
+            truth = data.target[cid].astype(float) - data.target[control].astype(float)
+            if not np.isfinite(truth).all():
+                raise ValueError('Nonfinite response')
+            vectors.append(truth)
+            records.append(dict(compound=row.compound, level=str(row.level),
+                                condition_id=int(cid), control_id=int(control)))
+        if not vectors:
+            raise ValueError('No treated conditions for response baseline')
+        return np.stack(vectors), pd.DataFrame(records)
+
+    training, training_meta = responses(train_ids)
+    means, counts = {}, {}
+    for level, group in training_meta.groupby('level', sort=True):
+        compound_means = [training[part.index.to_numpy()].mean(axis=0)
+                          for _, part in group.groupby('compound', sort=True)]
+        means[level] = np.stack(compound_means).mean(axis=0)
+        counts[level] = dict(compounds=len(compound_means), unique_treated_targets=len(group))
+    testing, detail = responses(test_ids)
+    missing = set(detail.level) - set(means)
+    if missing:
+        raise ValueError('No training baseline for target dose level: ' + ', '.join(sorted(missing)))
+    predicted = np.stack([means[level] for level in detail.level])
+    detail['training_mean_response_mse'] = ((testing - predicted) ** 2).mean(axis=1)
+    detail['zero_response_mse'] = (testing ** 2).mean(axis=1)
+    return means, dict(training_mean_response_rmse=float(np.sqrt(detail.training_mean_response_mse.mean())),
+                       zero_response_rmse=float(np.sqrt(detail.zero_response_mse.mean())),
+                       n_training_treated=len(training), n_targets=len(test_ids), n_treated=len(testing),
+                       baseline_definition='target_level: mean within compound then mean across compounds',
+                       training_counts_by_level=counts), detail
 
 
 def digest(path):
@@ -186,7 +249,7 @@ def execute(a, planned):
     data = first.Data(a)
     projection, pathways, provenance = pathway.load_projection(a.annotation, a.prepared)
     masks = {}
-    for seed in a.graph_seeds:
+    for seed in ([] if a.baseline_only else a.graph_seeds):
         file = out / f'mask_{seed}.npy'
         if file.exists():
             mask = np.load(file, allow_pickle=False)
@@ -204,7 +267,7 @@ def execute(a, planned):
         if mask.shape != projection.shape or not np.isin(mask, [0, 1]).all():
             raise ValueError('Invalid saved mask')
         masks[seed] = mask
-    records = []
+    records, baseline_records = [], []
     torch.set_num_threads(a.threads)
     with threadpool_limits(limits=a.threads):
         for seed in a.split_seeds:
@@ -216,6 +279,17 @@ def execute(a, planned):
                 return np.flatnonzero(data.pairs.compound.isin(split.loc[split.stage.eq(stage), 'compound']))
             itr, iv, te = selected('inner_train'), selected('inner_validation'), selected('outer_test')
             tr = np.sort(np.r_[itr, iv])
+            mean, baseline, detail = training_mean_response(data, tr, te)
+            baseline['split_seed'] = seed
+            levels = sorted(mean)
+            np.savez_compressed(folder / 'training_mean_response_by_level.npz',
+                                levels=np.asarray(levels), response=np.stack([mean[level] for level in levels]))
+            detail.to_csv(folder / 'baseline_response_conditions.csv', index=False)
+            save_json(folder / 'baseline_metrics.json', baseline)
+            baseline_records.append(baseline)
+            pd.DataFrame(baseline_records).to_csv(out / 'response_baselines.csv', index=False)
+            if a.baseline_only:
+                continue
             inner = pathway.prepare_pathways(data, itr, iv, projection, pathways, provenance)
             outer = pathway.prepare_pathways(data, tr, te, projection, pathways, provenance)
             joblib.dump(outer['preprocess'], folder / 'preprocess.joblib')
@@ -244,8 +318,16 @@ def execute(a, planned):
     table = pd.DataFrame(records)
     if len(table) != len(planned):
         raise ValueError('Incomplete run')
+    if a.baseline_only:
+        save_json(out / 'completed.json', dict(mode='baseline_only', splits=len(baseline_records), model_fits=0))
+        return
     for name, frame in zip(['per_unit', 'paired_differences', 'split_differences', 'descriptive_summary'], summarize(table)):
         frame.to_csv(out / f'{name}.csv', index=False)
+    per_unit = summarize(table)[0]
+    against = per_unit.merge(pd.DataFrame(baseline_records), on='split_seed', validate='many_to_one')
+    against['response_delta_vs_training_mean'] = against.response_rmse - against.training_mean_response_rmse
+    against['response_delta_vs_zero'] = against.response_rmse - against.zero_response_rmse
+    against.to_csv(out / 'models_vs_response_baselines.csv', index=False)
     save_json(out / 'completed.json', dict(expected_jobs=len(planned), completed_jobs=len(table)))
 
 
@@ -259,6 +341,8 @@ def parser():
     for name, default in [('epochs', 30), ('check-every', 5), ('batch-size', 128),
                           ('threads', 4), ('samples', 4), ('ddpm-steps', 100), ('swaps-per-edge', 10)]:
         p.add_argument('--' + name, type=int, default=default)
+    p.add_argument('--families', nargs='+', choices=['mlp', 'cgan', 'ddpm'], default=['mlp'])
+    p.add_argument('--baseline-only', action='store_true', help='Only training-mean and zero response baselines; no model fits or masks')
     p.add_argument('--execute', action='store_true', help='Explicitly start new training; omitted = plan only')
     return p
 
@@ -272,10 +356,14 @@ def main(argv=None):
             p.error('Seeds must be distinct integers in [0, 2**32)')
     if min(a.epochs, a.check_every, a.batch_size, a.threads, a.samples, a.ddpm_steps, a.swaps_per_edge) < 1:
         p.error('Settings must be positive')
-    planned = jobs(a.split_seeds, a.model_seeds, a.graph_seeds)
+    if len(a.families) != len(set(a.families)):
+        p.error('Families must be distinct')
+    planned = [] if a.baseline_only else jobs(a.split_seeds, a.model_seeds, a.graph_seeds,
+                [{'mlp': 'MLP', 'cgan': 'cGAN', 'ddpm': 'epsilon-DDPM'}[f] for f in a.families])
     print(json.dumps(dict(mode='execute' if a.execute else 'plan_only', split_seeds=a.split_seeds,
                          model_seeds=a.model_seeds, graph_seeds=a.graph_seeds,
-                         jobs=len(planned), fits_up_to=2 * len(planned)), indent=2))
+                         families=a.families, baseline_only=a.baseline_only,
+                         baseline_splits=len(a.split_seeds), jobs=len(planned), fits_up_to=2 * len(planned)), indent=2))
     if a.execute:
         execute(a, planned)
     return planned
