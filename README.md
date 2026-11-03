@@ -4,6 +4,8 @@
 
 AIVIVE는 in vitro→in vivo 변환과 생물학적 신호 보완이라는 문제 설정의 출발점입니다. GEARS는 생물학적 관계를 모델에 활용하는 아이디어의 영감이며, 현재 구현이 GEARS의 그래프나 유전자 교란 예측 모델을 구현한 것은 아닙니다. **AIVIVE·GEARS를 그대로 재현한 연구가 아닙니다.** RAID는 구조 정보와 in vitro 발현을 이용한 예측의 선행연구이고, sparse 연결 구현은 P-NET 원리를 참고했습니다. 현재 KEGG 소속 행렬은 완성된 지식 그래프 기반 diffusion이나 별도 pretraining의 검증을 뜻하지 않습니다.
 
+AIVIVE에서 선정한 유전자에 대응하는 **3453개 probe 목록을 고정한 토이 실험**입니다. 자체 저변동·저발현 필터 없이 동일 발현 입력에서 구조·pathway 표현의 효과를 비교합니다. 설정의 연구상 선택 이유와 최적성 검증은 [설계 범위·의도](docs/design-scope.md)에 구분했습니다. 입력의 원래 RMA·log2 척도는 아직 확정하지 않았으며 반응은 입력 발현 척도의 treated−control 차이로 설명합니다. 추가 필터·log 변환은 적용하지 않았습니다.
+
 ## 실험 발전과 현재 최종 비교
 
 과거 24h·109 probe 탐색 → 조건 평균·3453 probe 연구 재시작 → pathway 없는 모델 비교 → **평균 pathway 12조건 → sparse pathway 9조건**으로 진행했습니다. 자세한 [연구 상태](docs/research-state.md)와 [원본·자료 이력](docs/metadata-and-compound-history.md)을 참고하세요.

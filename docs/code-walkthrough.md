@@ -1,5 +1,7 @@
 # Python 코드 해설: 교수님께 설명하는 순서
 
+> 연구자가 확인한 범위: AIVIVE의 3453개 probe 목록을 고정한 토이 비교이며 자체 저변동·저발현 필터는 없습니다. [설계 의도·검증 범위·발현 척도](design-scope.md)를 참고하세요. 선택 의도가 있다는 것과 최적 설정이 검증됐다는 것은 구분합니다.
+
 ## 1. 테이블에서 tensor로
 
 `first_structure_mlp.Data`는 NPY 발현 배열과 CSV 조건·pair 테이블을 읽습니다. 배열 행 번호와 condition_id, probe 수가 맞는지 검사합니다. pair 한 행은 source vitro 조건 하나와 target vivo 조건 하나입니다. 같은 target에 source가 여러 개 연결될 수 있습니다.
@@ -42,6 +44,8 @@ return F.silu(aggregated + self.bias)
 `None`은 broadcasting용 차원을 추가합니다. 연결별 probe 발현에 서로 다른 가중치를 곱하고 `index_add`가 같은 pathway로 들어오는 항들을 더합니다. 노드 j,k는 `SiLU(sum_i x_i*w_ijk + b_jk)`입니다. pathway마다 4개 특징을 만들고 펼쳐 32차원으로 줄입니다. 고정 평균처럼 같은 가중치를 쓰지 않으므로 반대 방향 패턴을 구별할 수 있지만 압축이므로 완전한 정보 보존은 아닙니다. 같은 유전자에 여러 probe가 있으면 각각의 연결을 사용합니다.
 
 `none`은 pathway branch 출력이 0입니다. `mean`은 개별 probe 대신 pathway 평균 score를 반복 입력합니다. 동일한 명목상 parameter 수라도 none branch는 비활성이고 mean의 유효 자유도도 sparse와 다릅니다.
+
+Pathway당4개 unit은 여러 패턴 표현과 모델 규모의 초기 절충값이며 최적성 검증은 없습니다. 네 생물학적 기능을 뜻하지 않습니다. E=19,254·P=321·readout32일 때 branch parameter는 29,847×unit 수로, 1/4/8개에서 29,847/119,388/238,776개입니다. [숫자 선택과 설계 의도](design-scope.md)를 함께 참고하세요.
 
 ## 4. 세 입력 표현을 합치는 방법
 

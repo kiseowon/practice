@@ -1,5 +1,7 @@
 # IVIVE 연구 상태
 
+> 연구자가 확인한 범위: AIVIVE의 3453개 probe 목록을 고정한 토이 비교이며 자체 저변동·저발현 필터는 없습니다. [설계 의도·검증 범위·발현 척도](design-scope.md)를 참고하세요. 선택 의도가 있다는 것과 최적 설정이 검증됐다는 것은 구분합니다.
+
 ## 근거와 현재 작업 범위
 
 이 문서는 초기 `7d82be1`의 저장소 조사에서 출발해 후속 첨부 원본·서버 결과와 검증 기록으로 갱신했습니다. 최신 검증 구분은 [검증 상태](verification-status.md)를 참고하세요. 이전 대화의 기억으로 빈 내용을 보충하지 않았습니다. 코드·노트북에서 확인한 구현, 문서에 기록된 서버 확인 내용, 결과 요약의 출처를 구분합니다.
@@ -17,7 +19,7 @@
 - 조건 입력: source와 target 각각의 dose, time, unit, level입니다.
 - 최종 구조 입력 경로: `conditioned_expression/morgan_matched/morgan_binary.csv`. 기존 문서에는 `compound` 포함 2049열로 기록되어 있습니다. 로더는 이름 중복과 유한한 이진 값을 검사하고 화합물 이름으로 매칭합니다. 구조가 없는 화합물은 0과 presence flag로 처리합니다.
 - 결과 provenance의 누락 구조 이름은 `LPS`, `TNFÉø`, `tunicamycin`입니다. 두 번째 문자열의 정확한 원래 표기는 미확인이며 임의로 교정하지 않습니다.
-- pathway 입력은 기존 Rat KEGG snapshot의 `projection.npy`, `pathway_audit.csv`, `provenance.json`입니다. 로더는 종(`Rattus norvegicus`), probe 순서, 행렬 차원, pathway 중복, 비음수·유한 값, 열 합 1을 검사합니다. 기존 코드 해설에는 3453×321, 연결 19,254개로 기록되어 있으나 snapshot을 직접 확인한 것은 아닙니다.
+- pathway 입력은 기존 Rat KEGG snapshot의 `projection.npy`, `pathway_audit.csv`, `provenance.json`입니다. 로더는 종(`Rattus norvegicus`), probe 순서, 행렬 차원, pathway 중복, 비음수·유한 값, 열 합 1을 검사합니다. 후속 첨부 snapshot의 3453×321 형태, 연결 19,254개 및 원본 규칙과의 정확한 일치를 이 작업 환경에서 확인했습니다.
 
 **원자료는 주피터 서버에 있고 저장소에는 없습니다.** README에 따르면 annotation snapshot·체크포인트도 저장소에 없습니다. 노트북의 `/home/seowon1211/data1/conditioned_expression/...` 경로는 당시 서버 경로이며, 현재 클라우드에서 접근할 수 있다고 가정하지 않습니다.
 
