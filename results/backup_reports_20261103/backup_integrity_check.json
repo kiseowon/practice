@@ -1,0 +1,10 @@
+{
+  "checked_at": "2026-11-03T09:15:22.752426+09:00",
+  "archive": "/home/seowon1211/data1/ivive_full_backup_20261103_091022_8e1b67/ivive_files.tar.gz",
+  "archive_checksum_match": true,
+  "expected_files": 217,
+  "checked_files": 217,
+  "errors": [],
+  "passed": true,
+  "scope": "백업 파일 무결성 검사. 전체 연구 재실행 검증은 아님."
+}
