@@ -29,7 +29,11 @@ class CoreTests(unittest.TestCase):
         np.testing.assert_array_equal(original.sum(1),randomized.sum(1))
         self.assertFalse(np.array_equal(original,randomized))
     def test_standalone_notebook_definitions(self):
-        for file in (ROOT/'notebooks').glob('*.ipynb'):
+        # Archived notebooks contain historical training/API calls; inspect only
+        # the three standalone definition notebooks this test was written for.
+        for name in ['pathway_pattern_mlp.ipynb', 'pathway_random_control.ipynb',
+                     'sparse_pathway_gan_ddpm.ipynb']:
+            file=ROOT/'notebooks'/name
             nb=json.loads(file.read_text());namespace={'__name__':'test_notebook'}
             code=[c for c in nb['cells'] if c['cell_type']=='code']
             for c in code[:-1]:exec(compile(''.join(c['source']),str(file),'exec'),namespace)
